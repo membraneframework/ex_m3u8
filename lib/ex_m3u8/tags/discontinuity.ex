@@ -4,7 +4,7 @@ defmodule ExM3U8.Tags.Discontinuity do
   """
   use TypedStruct
 
-  typedstruct do
+  typedstruct enforce: true do
   end
 
   defimpl ExM3U8.Serializer do

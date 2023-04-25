@@ -1,15 +1,18 @@
 defmodule ExM3U8.MixProject do
   use Mix.Project
 
+  @version "0.1.0"
+
   def project do
     [
       app: :ex_m3u8,
-      version: "0.1.0",
+      version: @version,
       elixir: "~> 1.14",
       elixirc_paths: elixirc_paths(Mix.env()),
       start_permanent: Mix.env() == :prod,
       deps: deps(),
-      consolidate_protocols: Mix.env() != :test
+      consolidate_protocols: Mix.env() != :test,
+      docs: docs()
     ]
   end
 
@@ -33,6 +36,23 @@ defmodule ExM3U8.MixProject do
       {:dialyxir, "~> 1.3", only: [:dev], runtime: false}
       # {:dep_from_hexpm, "~> 0.3.0"},
       # {:dep_from_git, git: "https://github.com/elixir-lang/my_dep.git", tag: "0.1.0"}
+    ]
+  end
+
+  defp docs do
+    [
+      main: "readme",
+      extras: ["README.md"],
+      formatters: ["html"],
+      source_ref: "v#{@version}",
+      nest_modules_by_prefix: [
+        ExM3U8.Tags,
+        ExM3U8.MediaPlaylist
+      ],
+      groups_for_modules: [
+        Tags: ~r/ExM3U8\.Tags/,
+        Playlists: ~r/ExM3U8\.(MediaPlaylist|MultivariantPlaylist)/
+      ]
     ]
   end
 end

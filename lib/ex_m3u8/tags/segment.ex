@@ -4,7 +4,7 @@ defmodule ExM3U8.Tags.Segment do
   """
   use TypedStruct
 
-  typedstruct do
+  typedstruct enforce: true do
     field :duration, float()
     field :uri, String.t()
   end

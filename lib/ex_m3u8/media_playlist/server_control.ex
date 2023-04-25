@@ -9,7 +9,7 @@ defmodule ExM3U8.MediaPlaylist.ServerControl do
 
   alias ExM3U8.Deserializer.AttributesDeserializer
 
-  typedstruct do
+  typedstruct enforce: true do
     field :can_block_reload?, boolean(), default: false
     field :part_hold_back, float() | nil
     field :hold_back, float() | nil

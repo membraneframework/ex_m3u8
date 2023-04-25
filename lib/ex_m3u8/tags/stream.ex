@@ -8,7 +8,7 @@ defmodule ExM3U8.Tags.Stream do
 
   use TypedStruct
 
-  typedstruct do
+  typedstruct enforce: true do
     field :bandwidth, non_neg_integer()
     field :average_bandwidth, non_neg_integer() | nil
     field :codecs, String.t() | nil

@@ -4,7 +4,7 @@ defmodule ExM3U8.Tags.PreloadHint do
   """
   use TypedStruct
 
-  typedstruct do
+  typedstruct enforce: true do
     field :type, :part | :map, default: :part
     field :uri, String.t()
     field :byte_range_start, non_neg_integer() | nil
