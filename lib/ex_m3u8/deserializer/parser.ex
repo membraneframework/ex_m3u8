@@ -7,6 +7,15 @@ defmodule ExM3U8.Deserializer.Parser do
 
   alias ExM3U8.Deserializer.AttributesList
 
+  @type custom_tag_parser_result ::
+          :skip
+          | {:ok, tag :: struct(), remaining_lines :: [String.t()]}
+          | {:error, reason :: term()}
+
+  @type custom_tag_parser ::
+          (current_line :: String.t(), remaining_lines :: [String.t()] ->
+             custom_tag_parser_result())
+
   @extm3u "#EXTM3U"
 
   defp is_tag({tag, _value}, tags), do: tag in tags

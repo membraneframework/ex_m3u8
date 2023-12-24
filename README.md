@@ -1,6 +1,19 @@
 # ExM3u8
 A library for deserializing and serializing M3U8 format (known from HLS).
 
+## Install
+
+The package can be installed by adding `ex_m3u8` into your list of dependencies in `mix.exs`:
+
+```elixir
+def deps do
+  [
+    {:ex_m3u8, "~> 0.1.0"}
+  ]
+end
+```
+
+
 ## Functionality
 The whole package operates on 2 types of playlists mentioned in [HLS specification](https://datatracker.ietf.org/doc/html/draft-pantos-hls-rfc8216bis).
 
@@ -14,8 +27,9 @@ are necessary to start a proper playback.
 
 
 ## Usage
-The library provides 3 public functions that can be used by library's users
+The library provides 4 public functions (and their '!' versions) that can be used by library's users
 * `ExM3U8.serialize/1`
+* `ExM3U8.deserialize_playlist/2`
 * `ExM3U8.deserialize_media_playlist/2`
 * `ExM3U8.deserialize_multivariant_playlist/2`
 
