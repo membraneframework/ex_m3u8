@@ -7,10 +7,8 @@ defmodule ExM3U8.Deserializer.AttributesDeserializer do
           {:ok, struct()} | {:error, term()}
   def deserialize_struct_fields(module, load_fun, attrs) do
     module.__struct__
+    |> Map.delete(:__struct__)
     |> Map.keys()
-    # struct's fields are sorted and `__struct__` will always be first (as long
-    # as the number of fields is under 32 fields).
-    |> Enum.drop(1)
     |> Enum.reduce_while([], fn field, loaded ->
       case load_fun.(field, attrs) do
         {:ok, value} -> {:cont, [{field, value} | loaded]}

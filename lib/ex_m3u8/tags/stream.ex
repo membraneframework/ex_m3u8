@@ -11,13 +11,13 @@ defmodule ExM3U8.Tags.Stream do
   typedstruct enforce: true do
     field :bandwidth, non_neg_integer()
     field :name, String.t() | nil, default: nil
-    field :average_bandwidth, non_neg_integer() | nil
+    field :average_bandwidth, non_neg_integer() | nil, default: nil
     field :codecs, String.t() | nil
-    field :resolution, {width :: pos_integer(), height :: pos_integer()} | nil
-    field :frame_rate, float() | nil
-    field :audio, String.t() | nil
-    field :video, String.t() | nil
-    field :subtitles, String.t() | nil
+    field :resolution, {width :: pos_integer(), height :: pos_integer()} | nil, default: nil
+    field :frame_rate, float() | nil, default: nil
+    field :audio, String.t() | nil, default: nil
+    field :video, String.t() | nil, default: nil
+    field :subtitles, String.t() | nil, default: nil
     field :uri, String.t() | nil, default: nil
   end
 
