@@ -10,6 +10,7 @@ defmodule ExM3U8.Tags.Stream do
 
   typedstruct enforce: true do
     field :bandwidth, non_neg_integer()
+    field :name, String.t() | nil, default: nil
     field :average_bandwidth, non_neg_integer() | nil
     field :codecs, String.t() | nil
     field :resolution, {width :: pos_integer(), height :: pos_integer()} | nil
@@ -23,6 +24,7 @@ defmodule ExM3U8.Tags.Stream do
   @impl true
   def deserialize(attrs) do
     with {:ok, bandwidth} <- get_attribute(:bandwidth, attrs),
+         {:ok, name} <- get_attribute(:name, attrs),
          {:ok, average_bandwidth} <- get_attribute(:average_bandwidth, attrs),
          {:ok, codecs} <- get_attribute(:codecs, attrs),
          {:ok, resolution} <- get_attribute(:resolution, attrs),
@@ -33,6 +35,7 @@ defmodule ExM3U8.Tags.Stream do
       {:ok,
        %ExM3U8.Tags.Stream{
          bandwidth: bandwidth,
+         name: name,
          average_bandwidth: average_bandwidth,
          codecs: codecs,
          resolution: resolution,
@@ -52,6 +55,10 @@ defmodule ExM3U8.Tags.Stream do
       _other ->
         {:error, "invalid bandwidth"}
     end
+  end
+
+  defp get_attribute(:name, attrs) do
+    {:ok, Map.get(attrs, "NAME")}
   end
 
   defp get_attribute(:average_bandwidth, attrs) do
@@ -138,6 +145,7 @@ defmodule ExM3U8.Tags.Stream do
       Helpers.generate_sorter(field, [
         :bandwidth,
         :average_bandwidth,
+        :name,
         :codecs,
         :resolution,
         :frame_rate,
@@ -154,6 +162,10 @@ defmodule ExM3U8.Tags.Stream do
 
     dump_attribute :average_bandwidth,
       attribute: "AVERAGE-BANDWIDTH"
+
+    dump_attribute :name,
+      attribute: "NAME",
+      quoted_string?: true
 
     dump_attribute :codecs,
       attribute: "CODECS",
