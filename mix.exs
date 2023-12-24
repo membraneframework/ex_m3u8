@@ -2,6 +2,7 @@ defmodule ExM3U8.MixProject do
   use Mix.Project
 
   @version "0.1.0"
+  @github_url "https://github.com/Qizot/ex_m3u8"
 
   def project do
     [
@@ -12,7 +13,9 @@ defmodule ExM3U8.MixProject do
       start_permanent: Mix.env() == :prod,
       deps: deps(),
       consolidate_protocols: Mix.env() != :test,
-      docs: docs()
+      description: "A package for handling M3U8 playlist files",
+      docs: docs(),
+      package: package()
     ]
   end
 
@@ -28,8 +31,8 @@ defmodule ExM3U8.MixProject do
 
   defp deps do
     [
-      {:typed_struct, "~> 0.3.0"},
-      {:nimble_parsec, "~> 1.3"},
+      {:typed_struct, "~> 0.3.0", runtime: false},
+      {:nimble_parsec, "~> 1.3", runtime: false},
       {:ex_doc, "~> 0.27", only: :dev, runtime: false},
       {:credo, "~> 1.7", only: [:dev, :test], runtime: false},
       {:dialyxir, "~> 1.3", only: [:dev], runtime: false}
@@ -50,6 +53,14 @@ defmodule ExM3U8.MixProject do
         Tags: ~r/ExM3U8\.Tags/,
         Playlists: ~r/ExM3U8\.(MediaPlaylist|MultivariantPlaylist)/
       ]
+    ]
+  end
+
+  defp package() do
+    [
+      maintainers: ["Jakub Perzylo"],
+      links: %{"GitHub" => @github_url},
+      licenses: ["MIT"]
     ]
   end
 end
