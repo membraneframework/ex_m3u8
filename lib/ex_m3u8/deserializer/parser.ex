@@ -45,6 +45,7 @@ defmodule ExM3U8.Deserializer.Parser do
         {:ok,
          %ExM3U8.MultivariantPlaylist{
            version: version,
+           independent_segments: Map.has_key?(fields, :independent_segments),
            variants: streams
          }}
 
@@ -66,6 +67,7 @@ defmodule ExM3U8.Deserializer.Parser do
 
   @info_tags [
     :version,
+    :independent_segments,
     :playlist_type,
     :target_duration,
     :server_control,
@@ -187,6 +189,13 @@ defmodule ExM3U8.Deserializer.Parser do
       {version, ""} -> {:ok, :version, version}
       :error -> {:error, "invalid version value"}
     end
+  end
+
+  parse_raw "#EXT-X-INDEPENDENT-SEGMENTS" do
+    _value = value
+    _lines = lines
+
+    {:ok, :independent_segments, true, lines}
   end
 
   parse_tag "TARGETDURATION" do

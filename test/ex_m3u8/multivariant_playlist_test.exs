@@ -8,6 +8,8 @@ defmodule ExM3U8.MultivariantPlaylistTest do
   test "deserialize multivariant manifest" do
     manfiest = """
     #EXTM3U
+    #EXT-X-VERSION:7
+    #EXT-X-INDEPENDENT-SEGMENTS
     #EXT-X-STREAM-INF:BANDWIDTH=150000,RESOLUTION=416x234,CODECS="avc1.42e00a,mp4a.40.2"
     http://example.com/low/index.m3u8
     #EXT-X-STREAM-INF:BANDWIDTH=240000,RESOLUTION=416x234,CODECS="avc1.42e00a,mp4a.40.2"
@@ -22,6 +24,8 @@ defmodule ExM3U8.MultivariantPlaylistTest do
 
     assert {:ok,
             %ExM3U8.MultivariantPlaylist{
+              version: 7,
+              independent_segments: true,
               variants: [
                 %Stream{
                   bandwidth: 150_000,
@@ -59,6 +63,7 @@ defmodule ExM3U8.MultivariantPlaylistTest do
   test "serialize multivariant manifest" do
     playlist = %ExM3U8.MultivariantPlaylist{
       version: 7,
+      independent_segments: true,
       variants: [
         %Stream{
           subtitles: "DEFAULT",
@@ -100,6 +105,7 @@ defmodule ExM3U8.MultivariantPlaylistTest do
     assert """
            #EXTM3U
            #EXT-X-VERSION:7
+           #EXT-X-INDEPENDENT-SEGMENTS
            #EXT-X-STREAM-INF:BANDWIDTH=150000,CODECS="avc1.42e00a,mp4a.40.2",RESOLUTION=416x234,SUBTITLES="DEFAULT"
            http://example.com/low/index.m3u8
            #EXT-X-STREAM-INF:BANDWIDTH=240000,CODECS="avc1.42e00a,mp4a.40.2",RESOLUTION=416x234,VIDEO="DEFAULT"
