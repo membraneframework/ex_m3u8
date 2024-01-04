@@ -8,6 +8,7 @@ defmodule ExM3U8.MediaPlaylist do
 
   alias ExM3U8.Tags.{
     Discontinuity,
+    Key,
     MediaInit,
     Part,
     PreloadHint,
@@ -25,6 +26,7 @@ defmodule ExM3U8.MediaPlaylist do
       Discontinuity.t()
       | MediaInit.t()
       | Segment.t()
+      | Key.t()
       | Part.t()
       | PreloadHint.t()
       | ProgramDateTime.t()

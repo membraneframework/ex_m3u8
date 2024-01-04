@@ -82,6 +82,7 @@ defmodule ExM3U8.Deserializer.Parser do
     :media_init,
     :part,
     :segment,
+    :key,
     :discontinuity,
     :hint,
     :rendition_report,
@@ -267,6 +268,18 @@ defmodule ExM3U8.Deserializer.Parser do
     end
   end
 
+  parse_tag "KEY" do
+    case AttributesList.parse(value) do
+      {:ok, attributes} ->
+        with {:ok, key} <- ExM3U8.Tags.Key.deserialize(attributes) do
+          {:ok, :key, key}
+        end
+
+      :error ->
+        {:error, "invalid media tag"}
+    end
+  end
+
   parse_raw "#EXT-X-STREAM-INF:" do
     with {:ok, attrs} <- AttributesList.parse(value),
          [uri | lines] <- lines,
@@ -281,12 +294,24 @@ defmodule ExM3U8.Deserializer.Parser do
   parse_tag "RENDITION-REPORT" do
     case AttributesList.parse(value) do
       {:ok, attributes} ->
-        with {:ok, variant} <- ExM3U8.Tags.RenditionReport.deserialize(attributes) do
-          {:ok, :rendition_report, variant}
+        with {:ok, report} <- ExM3U8.Tags.RenditionReport.deserialize(attributes) do
+          {:ok, :rendition_report, report}
         end
 
       :error ->
         {:error, "invalid rendition report tag"}
+    end
+  end
+
+  parse_tag "PRELOAD-HINT" do
+    case AttributesList.parse(value) do
+      {:ok, attributes} ->
+        with {:ok, hint} <- ExM3U8.Tags.PreloadHint.deserialize(attributes) do
+          {:ok, :hint, hint}
+        end
+
+      :error ->
+        {:error, "invalid rendition preload hint tag"}
     end
   end
 

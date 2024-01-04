@@ -67,6 +67,7 @@ defmodule ExM3U8.MediaPlaylistTest do
         | timeline
       ] ++
         [
+          %ExM3U8.Tags.PreloadHint{type: :part, uri: "segment3.1.m4s"},
           %ExM3U8.Tags.RenditionReport{uri: "rendition_uri.m3u8", last_msn: 5, last_part: 3}
         ]
 
@@ -97,6 +98,7 @@ defmodule ExM3U8.MediaPlaylistTest do
            #EXT-X-PART:DURATION=1.0,URI="segment2.2.m4s"
            #EXTINF:3.0,
            segment2.m4s
+           #EXT-X-PRELOAD-HINT:TYPE=PART,URI="segment3.1.m4s"
            #EXT-X-RENDITION-REPORT:URI="rendition_uri.m3u8",LAST-MSN=5,LAST-PART=3
            """
            |> String.trim_trailing() == serialize(playlist)
@@ -150,6 +152,7 @@ defmodule ExM3U8.MediaPlaylistTest do
     #EXT-X-MEDIA-SEQUENCE:10
     #EXT-X-DISCONTINUITY-SEQUENCE:3
     #EXT-X-DISCONTINUITY
+    #EXT-X-KEY:METHOD="AES-128",URI="key_uri.key"
     #EXT-X-MAP:URI="header.mp4"
     #EXT-X-PROGRAM-DATE-TIME:2077-12-12T12:00:00Z
     #EXT-X-PART:DURATION=1.0,URI="segment1.1.m4s"
@@ -163,6 +166,7 @@ defmodule ExM3U8.MediaPlaylistTest do
     #EXT-X-PART:DURATION=1.0,URI="segment2.2.m4s"
     #EXTINF:3.0,
     segment2.m4s
+    #EXT-X-PRELOAD-HINT:TYPE=PART,URI="segment3.1.m4s"
     #EXT-X-RENDITION-REPORT:URI="rendition_uri.m3u8",LAST-MSN=5,LAST-PART=3
     """
 
@@ -197,10 +201,12 @@ defmodule ExM3U8.MediaPlaylistTest do
     timeline =
       [
         %ExM3U8.Tags.Discontinuity{},
+        %ExM3U8.Tags.Key{method: "AES-128", uri: "key_uri.key"},
         %ExM3U8.Tags.MediaInit{uri: "header.mp4"}
         | timeline
       ] ++
         [
+          %ExM3U8.Tags.PreloadHint{type: :part, uri: "segment3.1.m4s"},
           %ExM3U8.Tags.RenditionReport{uri: "rendition_uri.m3u8", last_msn: 5, last_part: 3}
         ]
 
