@@ -81,6 +81,7 @@ defmodule ExM3U8.Deserializer.Parser do
     :segment,
     :discontinuity,
     :hint,
+    :rendition_report,
     :custom_tag
   ]
   defp assemble_media_playlist(tags) do
@@ -264,6 +265,18 @@ defmodule ExM3U8.Deserializer.Parser do
     else
       _other ->
         {:error, "invalid media tag"}
+    end
+  end
+
+  parse_tag "RENDITION-REPORT" do
+    case AttributesList.parse(value) do
+      {:ok, attributes} ->
+        with {:ok, variant} <- ExM3U8.Tags.RenditionReport.deserialize(attributes) do
+          {:ok, :rendition_report, variant}
+        end
+
+      :error ->
+        {:error, "invalid rendition report tag"}
     end
   end
 

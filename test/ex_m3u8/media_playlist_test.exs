@@ -60,11 +60,15 @@ defmodule ExM3U8.MediaPlaylistTest do
       end
       |> List.flatten()
 
-    timeline = [
-      %ExM3U8.Tags.Discontinuity{},
-      %ExM3U8.Tags.MediaInit{uri: "header.mp4"}
-      | timeline
-    ]
+    timeline =
+      [
+        %ExM3U8.Tags.Discontinuity{},
+        %ExM3U8.Tags.MediaInit{uri: "header.mp4"}
+        | timeline
+      ] ++
+        [
+          %ExM3U8.Tags.RenditionReport{uri: "rendition_uri.m3u8", last_msn: 5, last_part: 3}
+        ]
 
     playlist = %ExM3U8.MediaPlaylist{
       info: info,
@@ -93,6 +97,7 @@ defmodule ExM3U8.MediaPlaylistTest do
            #EXT-X-PART:DURATION=1.0,URI="segment2.2.m4s"
            #EXTINF:3.0,
            segment2.m4s
+           #EXT-X-RENDITION-REPORT:URI="rendition_uri.m3u8",LAST-MSN=5,LAST-PART=3
            """
            |> String.trim_trailing() == serialize(playlist)
 
@@ -158,6 +163,7 @@ defmodule ExM3U8.MediaPlaylistTest do
     #EXT-X-PART:DURATION=1.0,URI="segment2.2.m4s"
     #EXTINF:3.0,
     segment2.m4s
+    #EXT-X-RENDITION-REPORT:URI="rendition_uri.m3u8",LAST-MSN=5,LAST-PART=3
     """
 
     info = %ExM3U8.MediaPlaylist.Info{
@@ -188,11 +194,15 @@ defmodule ExM3U8.MediaPlaylistTest do
       end
       |> List.flatten()
 
-    timeline = [
-      %ExM3U8.Tags.Discontinuity{},
-      %ExM3U8.Tags.MediaInit{uri: "header.mp4"}
-      | timeline
-    ]
+    timeline =
+      [
+        %ExM3U8.Tags.Discontinuity{},
+        %ExM3U8.Tags.MediaInit{uri: "header.mp4"}
+        | timeline
+      ] ++
+        [
+          %ExM3U8.Tags.RenditionReport{uri: "rendition_uri.m3u8", last_msn: 5, last_part: 3}
+        ]
 
     playlist = %ExM3U8.MediaPlaylist{
       info: info,

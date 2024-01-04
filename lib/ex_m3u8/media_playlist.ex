@@ -5,7 +5,16 @@ defmodule ExM3U8.MediaPlaylist do
   use TypedStruct
 
   alias ExM3U8.MediaPlaylist.Info
-  alias ExM3U8.Tags.{Discontinuity, MediaInit, Part, PreloadHint, ProgramDateTime, Segment}
+
+  alias ExM3U8.Tags.{
+    Discontinuity,
+    MediaInit,
+    Part,
+    PreloadHint,
+    ProgramDateTime,
+    RenditionReport,
+    Segment
+  }
 
   @type custom_tag_t :: struct()
 
@@ -19,6 +28,7 @@ defmodule ExM3U8.MediaPlaylist do
       | Part.t()
       | PreloadHint.t()
       | ProgramDateTime.t()
+      | RenditionReport.t()
       | custom_tag_t()
     ]
   end
