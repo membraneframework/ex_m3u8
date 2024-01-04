@@ -35,6 +35,7 @@ defmodule ExM3U8.Deserializer.Parser do
     tags
     |> Enum.group_by(&elem(&1, 0), &elem(&1, 1))
     |> case do
+      # NOTE: we may want to group media and stream together, right now we are ignoring variants
       %{stream: streams} = fields ->
         version =
           case Map.fetch(fields, :version) do
@@ -46,7 +47,7 @@ defmodule ExM3U8.Deserializer.Parser do
          %ExM3U8.MultivariantPlaylist{
            version: version,
            independent_segments: Map.has_key?(fields, :independent_segments),
-           variants: streams
+           items: streams
          }}
 
       _fields ->
@@ -257,8 +258,8 @@ defmodule ExM3U8.Deserializer.Parser do
   parse_tag "MEDIA" do
     case AttributesList.parse(value) do
       {:ok, attributes} ->
-        with {:ok, variant} <- ExM3U8.Tags.Variant.deserialize(attributes) do
-          {:ok, :media, variant}
+        with {:ok, media} <- ExM3U8.Tags.Media.deserialize(attributes) do
+          {:ok, :media, media}
         end
 
       :error ->

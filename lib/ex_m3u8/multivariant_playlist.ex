@@ -4,13 +4,15 @@ defmodule ExM3U8.MultivariantPlaylist do
   """
   use TypedStruct
 
-  alias ExM3U8.Tags.Variant
+  alias ExM3U8.Tags
+
+  @type custom_tag_t :: struct()
 
   typedstruct enforce: true do
     field :version, String.t(), default: nil
     field :independent_segments, boolean(), default: false
 
-    field :variants, [Variant.t()]
+    field :items, [Tags.Media.t() | Tags.Stream.t() | custom_tag_t()]
   end
 
   defimpl ExM3U8.Serializer do
@@ -18,7 +20,7 @@ defmodule ExM3U8.MultivariantPlaylist do
     def serialize(%@for{
           version: version,
           independent_segments: independent_segments,
-          variants: variants
+          items: items
         }) do
       info_section = [
         "#EXTM3U"
@@ -38,9 +40,9 @@ defmodule ExM3U8.MultivariantPlaylist do
           []
         end
 
-      streams = Enum.map(variants, &ExM3U8.Serializer.serialize/1)
+      items = Enum.map(items, &ExM3U8.Serializer.serialize/1)
 
-      Enum.intersperse(info_section ++ version ++ independent_segments ++ streams, "\n")
+      Enum.intersperse(info_section ++ version ++ independent_segments ++ items, "\n")
     end
   end
 end

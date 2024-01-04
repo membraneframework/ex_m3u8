@@ -26,7 +26,7 @@ defmodule ExM3U8.MultivariantPlaylistTest do
             %ExM3U8.MultivariantPlaylist{
               version: 7,
               independent_segments: true,
-              variants: [
+              items: [
                 %Stream{
                   bandwidth: 150_000,
                   resolution: {416, 234},
@@ -64,7 +64,7 @@ defmodule ExM3U8.MultivariantPlaylistTest do
     playlist = %ExM3U8.MultivariantPlaylist{
       version: 7,
       independent_segments: true,
-      variants: [
+      items: [
         %Stream{
           subtitles: "DEFAULT",
           bandwidth: 150_000,

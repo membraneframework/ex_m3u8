@@ -1,6 +1,6 @@
-defmodule ExM3U8.Tags.Variant do
+defmodule ExM3U8.Tags.Media do
   @moduledoc """
-  Structure representing a stream variant.
+  Structure representing a media tag. 
   """
   @behaviour ExM3U8.Deserializer.AttributesDeserializer
 
@@ -25,7 +25,7 @@ defmodule ExM3U8.Tags.Variant do
          {:ok, default?} <- get_attribute(:default?, attrs),
          {:ok, auto_select?} <- get_attribute(:auto_select?, attrs) do
       {:ok,
-       %ExM3U8.Tags.Variant{
+       %ExM3U8.Tags.Media{
          type: type,
          uri: uri,
          group_id: group_id,
