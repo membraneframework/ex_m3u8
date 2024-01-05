@@ -41,6 +41,7 @@ defmodule ExM3U8.MediaPlaylistTest do
         hold_back: 6.0,
         can_skip_until: 12.0
       },
+      start: {10.0, true},
       part_inf: 1.0,
       media_sequence: 10,
       discontinuity_sequence: 3
@@ -84,6 +85,7 @@ defmodule ExM3U8.MediaPlaylistTest do
            #EXT-X-PART-INF:PART-TARGET=1.0
            #EXT-X-MEDIA-SEQUENCE:10
            #EXT-X-DISCONTINUITY-SEQUENCE:3
+           #EXT-X-START:TIME-OFFSET=10.0,PRECISE=YES
            #EXT-X-DISCONTINUITY
            #EXT-X-MAP:URI="header.mp4"
            #EXT-X-PROGRAM-DATE-TIME:2077-12-12T12:00:00Z
@@ -100,15 +102,14 @@ defmodule ExM3U8.MediaPlaylistTest do
            segment2.m4s
            #EXT-X-PRELOAD-HINT:TYPE=PART,URI="segment3.1.m4s"
            #EXT-X-RENDITION-REPORT:URI="rendition_uri.m3u8",LAST-MSN=5,LAST-PART=3
-           """
-           |> String.trim_trailing() == serialize(playlist)
+           """ == serialize(playlist)
 
     playlist = %ExM3U8.MediaPlaylist{
       playlist
       | info: %ExM3U8.MediaPlaylist.Info{info | end_list?: true}
     }
 
-    assert String.ends_with?(serialize(playlist), "#EXT-X-ENDLIST")
+    assert String.ends_with?(serialize(playlist), "#EXT-X-ENDLIST\n")
   end
 
   test "serialize server control" do
@@ -151,6 +152,7 @@ defmodule ExM3U8.MediaPlaylistTest do
     #EXT-X-PART-INF:PART-TARGET=1.0
     #EXT-X-MEDIA-SEQUENCE:10
     #EXT-X-DISCONTINUITY-SEQUENCE:3
+    #EXT-X-START:TIME-OFFSET=10.0,PRECISE=YES
     #EXT-X-DISCONTINUITY
     #EXT-X-KEY:METHOD="AES-128",URI="key_uri.key"
     #EXT-X-MAP:URI="header.mp4"
@@ -179,6 +181,7 @@ defmodule ExM3U8.MediaPlaylistTest do
         hold_back: 6.0,
         can_skip_until: 12.0
       },
+      start: {10.0, true},
       part_inf: 1.0,
       media_sequence: 10,
       discontinuity_sequence: 3
@@ -268,6 +271,6 @@ defmodule ExM3U8.MediaPlaylistTest do
     #EXT-X-CUSTOM-KNOWN-TAG:VALUE=1
     """
 
-    assert String.trim_trailing(expected_manifest) == serialize(playlist)
+    assert expected_manifest == serialize(playlist)
   end
 end

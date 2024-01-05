@@ -42,7 +42,7 @@ defmodule ExM3U8.MultivariantPlaylist do
 
       items = Enum.map(items, &ExM3U8.Serializer.serialize/1)
 
-      Enum.intersperse(info_section ++ version ++ independent_segments ++ items, "\n")
+      [Enum.intersperse(info_section ++ version ++ independent_segments ++ items, "\n"), "\n"]
     end
   end
 end

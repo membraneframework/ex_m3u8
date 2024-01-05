@@ -72,7 +72,7 @@ defmodule ExM3U8.Tags.Key do
 
     dump_attribute :method,
       attribute: "METHOD",
-      quoted_string?: true,
+      quoted_string?: false,
       skip_empty?: false
 
     dump_attribute :uri,

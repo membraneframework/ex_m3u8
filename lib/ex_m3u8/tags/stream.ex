@@ -99,7 +99,7 @@ defmodule ExM3U8.Tags.Stream do
   end
 
   defp get_attribute(:frame_rate, attrs) do
-    case Map.get(attrs, "FRAMERATE", nil) do
+    case Map.get(attrs, "FRAME-RATE", nil) do
       nil ->
         {:ok, nil}
 
@@ -143,9 +143,9 @@ defmodule ExM3U8.Tags.Stream do
 
     defp sorter(field) do
       Helpers.generate_sorter(field, [
+        :name,
         :bandwidth,
         :average_bandwidth,
-        :name,
         :codecs,
         :resolution,
         :frame_rate,
@@ -172,7 +172,7 @@ defmodule ExM3U8.Tags.Stream do
       quoted_string?: true
 
     dump_attribute :frame_rate,
-      attribute: "FRAMERATE"
+      attribute: "FRAME-RATE"
 
     dump_attribute :audio,
       attribute: "AUDIO",

@@ -75,6 +75,7 @@ defmodule ExM3U8.Deserializer.Parser do
     :part_inf,
     :media_sequence,
     :discontinuity_sequence,
+    :start,
     :end_list
   ]
   @timeline_tags [
@@ -111,7 +112,9 @@ defmodule ExM3U8.Deserializer.Parser do
          part_inf <- Map.get(tags, :part_inf),
          media_sequence <- Map.get(tags, :media_sequence, 0),
          discontinuity_sequence <- Map.get(tags, :discontinuity_sequence, 0),
-         end_list <- Map.get(tags, :end_list, false) do
+         start <- Map.get(tags, :start, nil),
+         end_list <-
+           Map.get(tags, :end_list, false) do
       {:ok,
        %ExM3U8.MediaPlaylist.Info{
          version: version,
@@ -121,6 +124,7 @@ defmodule ExM3U8.Deserializer.Parser do
          part_inf: part_inf,
          media_sequence: media_sequence,
          discontinuity_sequence: discontinuity_sequence,
+         start: start,
          end_list?: end_list
        }}
     else
@@ -165,6 +169,16 @@ defmodule ExM3U8.Deserializer.Parser do
 
       :error ->
         {:error, "invalid segment duration"}
+    end
+  end
+
+  parse_tag "PROGRAM-DATE-TIME" do
+    case DateTime.from_iso8601(value) do
+      {:ok, date_time, _rest} ->
+        {:ok, :program_date_time, %ExM3U8.Tags.ProgramDateTime{date: date_time}}
+
+      _other ->
+        {:error, "invalid program date time"}
     end
   end
 
@@ -246,13 +260,28 @@ defmodule ExM3U8.Deserializer.Parser do
     end
   end
 
-  parse_tag "PROGRAM-DATE-TIME" do
-    case DateTime.from_iso8601(value) do
-      {:ok, date_time, _rest} ->
-        {:ok, :program_date_time, %ExM3U8.Tags.ProgramDateTime{date: date_time}}
+  parse_tag "START" do
+    with {:ok, attrs} <- AttributesList.parse(value),
+         {:ok, time_offset} <- Map.fetch(attrs, "TIME-OFFSET"),
+         precise <- Map.get(attrs, "PRECISE", "NO"),
+         {time_offset, ""} <- Float.parse(time_offset) do
+      precise =
+        case precise do
+          "YES" -> true
+          "NO" -> false
+          _other -> false
+        end
 
-      _other ->
-        {:error, "invalid program date time"}
+      {:ok, :start, {time_offset, precise}}
+    else
+      :error ->
+        {:error, "invalid start tag"}
+
+      {:error, _reason} ->
+        {:error, "invalid start tag"}
+
+      {time, _rest} when is_float(time) ->
+        {:error, "invalid start tag time offset"}
     end
   end
 

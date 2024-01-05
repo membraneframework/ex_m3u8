@@ -112,11 +112,10 @@ defmodule ExM3U8.MultivariantPlaylistTest do
            http://example.com/lo_mid/index.m3u8
            #EXT-X-STREAM-INF:BANDWIDTH=440000,CODECS="avc1.42e00a,mp4a.40.2",RESOLUTION=416x234,AUDIO="DEFAULT"
            http://example.com/hi_mid/index.m3u8
-           #EXT-X-STREAM-INF:BANDWIDTH=640000,CODECS="avc1.42e00a,mp4a.40.2",RESOLUTION=640x360,FRAMERATE=60.0
+           #EXT-X-STREAM-INF:BANDWIDTH=640000,CODECS="avc1.42e00a,mp4a.40.2",RESOLUTION=640x360,FRAME-RATE=60.0
            http://example.com/high/index.m3u8
            #EXT-X-STREAM-INF:BANDWIDTH=64000,AVERAGE-BANDWIDTH=50000,CODECS="mp4a.40.5"
            http://example.com/audio/index.m3u8
-           """
-           |> String.trim_trailing() == serialize(playlist)
+           """ == serialize(playlist)
   end
 end

@@ -52,7 +52,7 @@ defmodule ExM3U8.MediaPlaylist do
           []
         end
 
-      [Enum.intersperse(info_section ++ timeline, "\n"), end_list]
+      [Enum.intersperse(info_section ++ timeline ++ end_list, "\n"), "\n"]
     end
   end
 end

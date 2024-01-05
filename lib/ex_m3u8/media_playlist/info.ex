@@ -12,6 +12,7 @@ defmodule ExM3U8.MediaPlaylist.Info do
     field :part_inf, float() | nil, default: nil
     field :media_sequence, non_neg_integer(), default: 0
     field :discontinuity_sequence, non_neg_integer(), default: 0
+    field :start, {time_offset :: float(), precise :: boolean()} | nil, default: nil
     # NOTE: this tag cannot be serialized along above tags
     field :end_list?, boolean(), default: false
   end
@@ -37,6 +38,7 @@ defmodule ExM3U8.MediaPlaylist.Info do
         :part_inf,
         :media_sequence,
         :discontinuity_sequence,
+        :start,
         :end_list?
       ])
     end
@@ -67,7 +69,20 @@ defmodule ExM3U8.MediaPlaylist.Info do
     defp dump({:part_inf, nil}), do: []
 
     defp dump({:part_inf, part_inf}),
-      do: [Helpers.tag_prefix(), "PART-INF:PART-TARGET=", "#{Float.ceil(part_inf, 5)}"]
+      do: [Helpers.tag_prefix(), "PART-INF:PART-TARGET=", "#{Float.round(part_inf, 3)}"]
+
+    defp dump({:start, nil}),
+      do: []
+
+    defp dump({:start, {time_offset, precise}}),
+      do: [
+        Helpers.tag_prefix(),
+        "START:",
+        "TIME-OFFSET=",
+        "#{Float.ceil(time_offset, 5)},",
+        "PRECISE=",
+        "#{if(precise, do: "YES", else: "NO")}"
+      ]
 
     dump_tag :media_sequence,
       tag: "MEDIA-SEQUENCE",
