@@ -154,7 +154,7 @@ defmodule ExM3U8.MediaPlaylistTest do
     #EXT-X-DISCONTINUITY-SEQUENCE:3
     #EXT-X-START:TIME-OFFSET=10.0,PRECISE=YES
     #EXT-X-DISCONTINUITY
-    #EXT-X-KEY:METHOD="AES-128",URI="key_uri.key"
+    #EXT-X-KEY:METHOD=AES-128,URI="key_uri.key"
     #EXT-X-MAP:URI="header.mp4"
     #EXT-X-PROGRAM-DATE-TIME:2077-12-12T12:00:00Z
     #EXT-X-PART:DURATION=1.0,URI="segment1.1.m4s"
@@ -204,7 +204,7 @@ defmodule ExM3U8.MediaPlaylistTest do
     timeline =
       [
         %ExM3U8.Tags.Discontinuity{},
-        %ExM3U8.Tags.Key{method: "AES-128", uri: "key_uri.key"},
+        %ExM3U8.Tags.Key{method: :aes_128, uri: "key_uri.key"},
         %ExM3U8.Tags.MediaInit{uri: "header.mp4"}
         | timeline
       ] ++

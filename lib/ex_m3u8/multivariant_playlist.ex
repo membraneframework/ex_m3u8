@@ -9,7 +9,7 @@ defmodule ExM3U8.MultivariantPlaylist do
   @type custom_tag_t :: struct()
 
   typedstruct enforce: true do
-    field :version, String.t(), default: nil
+    field :version, non_neg_integer(), default: nil
     field :independent_segments, boolean(), default: false
 
     field :items, [Tags.Media.t() | Tags.Stream.t() | custom_tag_t()]

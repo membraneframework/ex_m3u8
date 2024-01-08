@@ -11,8 +11,10 @@ defmodule ExM3U8.Tags.Key do
 
   alias ExM3U8.Deserializer.AttributesDeserializer
 
+  @type method :: :aes_128 | :sample_aes | :none
+
   typedstruct enforce: true do
-    field :method, String.t()
+    field :method, method()
     field :uri, String.t() | nil, default: nil
     field :iv, String.t() | nil, default: nil
     field :key_format, String.t() | nil, default: nil
@@ -28,9 +30,14 @@ defmodule ExM3U8.Tags.Key do
     )
   end
 
-  load_attribute :method,
-    attribute: "METHOD",
-    allow_empty?: false
+  defp load(:method, attrs) do
+    case Map.get(attrs, "METHOD") do
+      "AES-128" -> {:ok, :aes_128}
+      "SAMPLE-AES" -> {:ok, :sample_aes}
+      "NONE" -> {:ok, :none}
+      value -> {:error, "invalid method value '#{value}'"}
+    end
+  end
 
   load_attribute :uri,
     attribute: "URI",
@@ -70,10 +77,16 @@ defmodule ExM3U8.Tags.Key do
       ])
     end
 
-    dump_attribute :method,
-      attribute: "METHOD",
-      quoted_string?: false,
-      skip_empty?: false
+    defp dump({:method, method}) do
+      method =
+        case method do
+          :aes_128 -> "AES-128"
+          :sample_aes -> "SAMPLE-AES"
+          :none -> "NONE"
+        end
+
+      "METHOD=#{method}"
+    end
 
     dump_attribute :uri,
       attribute: "URI",
@@ -82,7 +95,7 @@ defmodule ExM3U8.Tags.Key do
 
     dump_attribute :iv,
       attribute: "IV",
-      quoted_string?: true,
+      quoted_string?: false,
       skip_empty?: true
 
     dump_attribute :key_format,

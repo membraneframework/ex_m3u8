@@ -9,7 +9,7 @@ defmodule ExM3U8.Deserializer.AttributesList do
     |> ignore(string("="))
     |> choice([
       # non-quoted attribute value
-      ascii_string([?a..?z, ?A..?Z, ?0..?9, ?.], min: 1)
+      ascii_string([?a..?z, ?A..?Z, ?0..?9, ?., ?-], min: 1)
       |> unwrap_and_tag(:value),
       # quoted attribute value
       ignore(ascii_char([?"]))
