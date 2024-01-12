@@ -1,8 +1,8 @@
 defmodule ExM3U8.MixProject do
   use Mix.Project
 
-  @version "0.8.0"
-  @github_url "https://github.com/Qizot/ex_m3u8"
+  @version "0.9.0"
+  @github_url "https://github.com/membraneframework/ex_m3u8"
 
   def project do
     [
@@ -13,9 +13,16 @@ defmodule ExM3U8.MixProject do
       start_permanent: Mix.env() == :prod,
       deps: deps(),
       consolidate_protocols: Mix.env() != :test,
+
+      # hex
       description: "A package for handling M3U8 playlist files",
-      docs: docs(),
-      package: package()
+      package: package(),
+
+      # docs
+      name: "ExM3U8",
+      source_url: @github_url,
+      homepage_url: "https://membraneframework.org",
+      docs: docs()
     ]
   end
 
@@ -42,7 +49,7 @@ defmodule ExM3U8.MixProject do
   defp docs do
     [
       main: "readme",
-      extras: ["README.md"],
+      extras: ["README.md", "LICENSE"],
       formatters: ["html"],
       source_ref: "v#{@version}",
       nest_modules_by_prefix: [
@@ -56,11 +63,14 @@ defmodule ExM3U8.MixProject do
     ]
   end
 
-  defp package() do
+  defp package do
     [
-      maintainers: ["Jakub Perzylo"],
-      links: %{"GitHub" => @github_url},
-      licenses: ["MIT"]
+      maintainers: ["Membrane Team"],
+      licenses: ["Apache-2.0"],
+      links: %{
+        "GitHub" => @github_url,
+        "Membrane Framework Homepage" => "https://membraneframework.org"
+      }
     ]
   end
 end
