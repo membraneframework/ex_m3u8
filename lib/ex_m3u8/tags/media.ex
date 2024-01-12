@@ -5,6 +5,9 @@ defmodule ExM3U8.Tags.Media do
   @behaviour ExM3U8.Deserializer.AttributesDeserializer
 
   use TypedStruct
+  use ExM3U8.DSL, disable_loaders: [:int, :float]
+
+  alias ExM3U8.Deserializer.AttributesDeserializer
 
   typedstruct enforce: true do
     field :type, :audio | :video | :subtitles | :closed_captions
@@ -18,26 +21,41 @@ defmodule ExM3U8.Tags.Media do
 
   @impl true
   def deserialize(attrs) do
-    with {:ok, type} <- get_attribute(:type, attrs),
-         {:ok, uri} <- get_attribute(:uri, attrs),
-         {:ok, group_id} <- get_attribute(:group_id, attrs),
-         {:ok, name} <- get_attribute(:name, attrs),
-         {:ok, default?} <- get_attribute(:default?, attrs),
-         {:ok, auto_select?} <- get_attribute(:auto_select?, attrs) do
-      {:ok,
-       %ExM3U8.Tags.Media{
-         type: type,
-         uri: uri,
-         group_id: group_id,
-         language: get_attribute(:language, attrs),
-         name: name,
-         default?: default?,
-         auto_select?: auto_select?
-       }}
-    end
+    AttributesDeserializer.deserialize_struct_fields(
+      __MODULE__,
+      &load/2,
+      attrs
+    )
   end
 
-  defp get_attribute(:type, attrs) do
+  load_attribute :uri,
+    attribute: "URI",
+    allow_empty?: false
+
+  load_attribute :group_id,
+    attribute: "GROUP-ID",
+    allow_empty?: false
+
+  load_attribute :language,
+    attribute: "LANGUAGE",
+    allow_empty?: true
+
+  load_attribute :name,
+    attribute: "NAME",
+    allow_empty?: false
+
+  load_attribute :default?,
+    attribute: "DEFAULT",
+    allow_empty?: false,
+    type: :boolean
+
+  load_attribute :auto_select?,
+    attribute: "AUTOSELECT",
+    default: false,
+    allow_empty?: true,
+    type: :boolean
+
+  defp load(:type, attrs) do
     case Map.get(attrs, "TYPE", nil) do
       "AUDIO" -> :audio
       "VIDEO" -> :video
@@ -48,44 +66,6 @@ defmodule ExM3U8.Tags.Media do
     |> case do
       nil -> {:error, "invalid media type"}
       type -> {:ok, type}
-    end
-  end
-
-  defp get_attribute(:uri, attrs) do
-    with :error <- Map.fetch(attrs, "URI") do
-      {:error, "uri missing"}
-    end
-  end
-
-  defp get_attribute(:group_id, attrs) do
-    with :error <- Map.fetch(attrs, "GROUP-ID") do
-      {:error, "group id missing"}
-    end
-  end
-
-  defp get_attribute(:language, attrs) do
-    Map.get(attrs, "LANGUAGE")
-  end
-
-  defp get_attribute(:name, attrs) do
-    with :error <- Map.fetch(attrs, "NAME") do
-      {:error, "name missing"}
-    end
-  end
-
-  defp get_attribute(:default?, attrs) do
-    case Map.get(attrs, "DEFAULT", "NO") do
-      "YES" -> {:ok, true}
-      "NO" -> {:ok, false}
-      _other -> {:error, "invalid default value"}
-    end
-  end
-
-  defp get_attribute(:auto_select?, attrs) do
-    case Map.get(attrs, "AUTOSELECT", "NO") do
-      "YES" -> {:ok, true}
-      "NO" -> {:ok, false}
-      _other -> {:error, "invalid auto select value"}
     end
   end
 

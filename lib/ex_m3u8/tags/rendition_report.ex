@@ -4,7 +4,10 @@ defmodule ExM3U8.Tags.RenditionReport do
   """
   @behaviour ExM3U8.Deserializer.AttributesDeserializer
 
+  use ExM3U8.DSL, disable_loaders: [:float, :boolean]
   use TypedStruct
+
+  alias ExM3U8.Deserializer.AttributesDeserializer
 
   typedstruct enforce: true do
     field :uri, String.t()
@@ -14,43 +17,26 @@ defmodule ExM3U8.Tags.RenditionReport do
 
   @impl true
   def deserialize(attrs) do
-    with {:ok, uri} <- get_attribute(:uri, attrs),
-         {:ok, last_msn} <- get_attribute(:last_msn, attrs),
-         {:ok, last_part} <- get_attribute(:last_part, attrs) do
-      {:ok,
-       %ExM3U8.Tags.RenditionReport{
-         uri: uri,
-         last_msn: last_msn,
-         last_part: last_part
-       }}
-    end
+    AttributesDeserializer.deserialize_struct_fields(
+      __MODULE__,
+      &load/2,
+      attrs
+    )
   end
 
-  defp get_attribute(:uri, attrs) do
-    with :error <- Map.fetch(attrs, "URI") do
-      {:error, "uri missing"}
-    end
-  end
+  load_attribute :uri,
+    attribute: "URI",
+    allow_empty?: false
 
-  defp get_attribute(:last_msn, attrs) do
-    with {:ok, last_msn} <- Map.fetch(attrs, "LAST-MSN"),
-         {last_msn, ""} <- Integer.parse(last_msn) do
-      {:ok, last_msn}
-    else
-      _other ->
-        {:error, "invalid last msn"}
-    end
-  end
+  load_attribute :last_msn,
+    attribute: "LAST-MSN",
+    allow_empty?: true,
+    type: :int
 
-  defp get_attribute(:last_part, attrs) do
-    with {:ok, last_part} <- Map.fetch(attrs, "LAST-PART"),
-         {last_part, ""} <- Integer.parse(last_part) do
-      {:ok, last_part}
-    else
-      _other ->
-        {:error, "invalid last part"}
-    end
-  end
+  load_attribute :last_part,
+    attribute: "LAST-PART",
+    allow_empty?: true,
+    type: :int
 
   defimpl ExM3U8.Serializer do
     use ExM3U8.DSL

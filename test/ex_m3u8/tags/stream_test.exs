@@ -13,12 +13,13 @@ defmodule ExM3U8.Tags.StreamTest do
       audio: "AUDIO",
       video: "VIDEO",
       subtitles: nil,
-      uri: "http://coolstorybruh.com"
+      uri: "http://coolstorybruh.com",
+      pathway_id: "CDN-A"
     }
 
     expected =
       """
-      #EXT-X-STREAM-INF:BANDWIDTH=6000000,AVERAGE-BANDWIDTH=5500000,CODECS="mp4.0HEHEHE",RESOLUTION=1920x1080,FRAME-RATE=60.0,AUDIO="AUDIO",VIDEO="VIDEO"
+      #EXT-X-STREAM-INF:BANDWIDTH=6000000,AVERAGE-BANDWIDTH=5500000,CODECS="mp4.0HEHEHE",RESOLUTION=1920x1080,FRAME-RATE=60.0,AUDIO="AUDIO",VIDEO="VIDEO",PATHWAY-ID="CDN-A"
       http://coolstorybruh.com
       """
       |> String.trim_trailing()
@@ -28,7 +29,7 @@ defmodule ExM3U8.Tags.StreamTest do
 
   test "deserialize stream" do
     attributes =
-      ~s(BANDWIDTH=6000000,AVERAGE-BANDWIDTH=5500000,CODECS="mp4.0HEHEHE",RESOLUTION=1920x1080,FRAME-RATE=60.0,AUDIO="AUDIO",VIDEO="VIDEO")
+      ~s(BANDWIDTH=6000000,AVERAGE-BANDWIDTH=5500000,CODECS="mp4.0HEHEHE",RESOLUTION=1920x1080,FRAME-RATE=60.0,AUDIO="AUDIO",VIDEO="VIDEO",PATHWAY-ID="CDN-A")
 
     assert {:ok, attrs} = ExM3U8.Deserializer.AttributesList.parse(attributes)
 
@@ -41,7 +42,8 @@ defmodule ExM3U8.Tags.StreamTest do
       audio: "AUDIO",
       video: "VIDEO",
       subtitles: nil,
-      uri: nil
+      uri: nil,
+      pathway_id: "CDN-A"
     }
 
     assert {:ok, ^stream} = ExM3U8.Tags.Stream.deserialize(attrs)

@@ -8,6 +8,10 @@ defmodule ExM3U8.Tags.Stream do
 
   use TypedStruct
 
+  use ExM3U8.DSL, disable_loaders: [:boolean]
+
+  alias ExM3U8.Deserializer.AttributesDeserializer
+
   typedstruct enforce: true do
     field :bandwidth, non_neg_integer()
     field :name, String.t() | nil, default: nil
@@ -19,69 +23,61 @@ defmodule ExM3U8.Tags.Stream do
     field :video, String.t() | nil, default: nil
     field :subtitles, String.t() | nil, default: nil
     field :uri, String.t() | nil, default: nil
+    field :pathway_id, String.t() | nil, default: nil
   end
 
   @impl true
   def deserialize(attrs) do
-    with {:ok, bandwidth} <- get_attribute(:bandwidth, attrs),
-         {:ok, name} <- get_attribute(:name, attrs),
-         {:ok, average_bandwidth} <- get_attribute(:average_bandwidth, attrs),
-         {:ok, codecs} <- get_attribute(:codecs, attrs),
-         {:ok, resolution} <- get_attribute(:resolution, attrs),
-         {:ok, frame_rate} <- get_attribute(:frame_rate, attrs),
-         {:ok, audio} <- get_attribute(:audio, attrs),
-         {:ok, video} <- get_attribute(:video, attrs),
-         {:ok, subtitles} <- get_attribute(:subtitles, attrs) do
-      {:ok,
-       %ExM3U8.Tags.Stream{
-         bandwidth: bandwidth,
-         name: name,
-         average_bandwidth: average_bandwidth,
-         codecs: codecs,
-         resolution: resolution,
-         frame_rate: frame_rate,
-         audio: audio,
-         video: video,
-         subtitles: subtitles
-       }}
-    end
+    AttributesDeserializer.deserialize_struct_fields(
+      __MODULE__,
+      &load/2,
+      attrs
+    )
   end
 
-  defp get_attribute(:bandwidth, attrs) do
-    with {:ok, bandwidth} <- Map.fetch(attrs, "BANDWIDTH"),
-         {bandwidth, ""} <- Integer.parse(bandwidth) do
-      {:ok, bandwidth}
-    else
-      _other ->
-        {:error, "invalid bandwidth"}
-    end
-  end
+  load_attribute :bandwidth,
+    attribute: "BANDWIDTH",
+    allow_empty?: true,
+    type: :int
 
-  defp get_attribute(:name, attrs) do
-    {:ok, Map.get(attrs, "NAME")}
-  end
+  load_attribute :name,
+    attribute: "NAME",
+    allow_empty?: true
 
-  defp get_attribute(:average_bandwidth, attrs) do
-    case Map.get(attrs, "AVERAGE-BANDWIDTH", nil) do
-      nil ->
-        {:ok, nil}
+  load_attribute :average_bandwidth,
+    attribute: "AVERAGE-BANDWIDTH",
+    allow_empty?: true,
+    type: :int
 
-      average_bandwidth ->
-        case Integer.parse(average_bandwidth) do
-          {average_bandwidth, ""} ->
-            {:ok, average_bandwidth}
+  load_attribute :codecs,
+    attribute: "CODECS",
+    allow_empty?: true
 
-          :error ->
-            {:error, "invalid average bandwidth"}
-        end
-    end
-  end
+  load_attribute :frame_rate,
+    attribute: "FRAME-RATE",
+    allow_empty?: true,
+    type: :float
 
-  defp get_attribute(:codecs, attrs) do
-    {:ok, Map.get(attrs, "CODECS")}
-  end
+  load_attribute :audio,
+    attribute: "AUDIO",
+    allow_empty?: true
 
-  defp get_attribute(:resolution, attrs) do
+  load_attribute :video,
+    attribute: "VIDEO",
+    allow_empty?: true
+
+  load_attribute :subtitles,
+    attribute: "SUBTITLES",
+    allow_empty?: true
+
+  load_attribute :pathway_id,
+    attribute: "PATHWAY-ID",
+    allow_empty?: true
+
+  # NOTE: uri is a part of tag's new line, we don't load it from attributes
+  defp load(:uri, _attrs), do: {:ok, nil}
+
+  defp load(:resolution, attrs) do
     case Map.get(attrs, "RESOLUTION", nil) do
       nil ->
         {:ok, nil}
@@ -96,31 +92,6 @@ defmodule ExM3U8.Tags.Stream do
             {:error, "invalid resolution"}
         end
     end
-  end
-
-  defp get_attribute(:frame_rate, attrs) do
-    case Map.get(attrs, "FRAME-RATE", nil) do
-      nil ->
-        {:ok, nil}
-
-      frame_rate ->
-        case Float.parse(frame_rate) do
-          {frame_rate, ""} -> {:ok, frame_rate}
-          :error -> {:error, "invalid framerate"}
-        end
-    end
-  end
-
-  defp get_attribute(:audio, attrs) do
-    {:ok, Map.get(attrs, "AUDIO", nil)}
-  end
-
-  defp get_attribute(:video, attrs) do
-    {:ok, Map.get(attrs, "VIDEO", nil)}
-  end
-
-  defp get_attribute(:subtitles, attrs) do
-    {:ok, Map.get(attrs, "SUBTITLES", nil)}
   end
 
   defimpl ExM3U8.Serializer do
@@ -152,6 +123,7 @@ defmodule ExM3U8.Tags.Stream do
         :audio,
         :video,
         :subtitles,
+        :pathway_id,
         :uri
       ])
     end
@@ -184,6 +156,10 @@ defmodule ExM3U8.Tags.Stream do
 
     dump_attribute :subtitles,
       attribute: "SUBTITLES",
+      quoted_string?: true
+
+    dump_attribute :pathway_id,
+      attribute: "PATHWAY-ID",
       quoted_string?: true
 
     ignore_dump(:uri)

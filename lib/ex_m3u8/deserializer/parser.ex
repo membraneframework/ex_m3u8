@@ -32,27 +32,27 @@ defmodule ExM3U8.Deserializer.Parser do
   defp assemble_multi_variant_playlist({:error, _reason} = error), do: error
 
   defp assemble_multi_variant_playlist(tags) do
-    tags
-    |> Enum.group_by(&elem(&1, 0), &elem(&1, 1))
-    |> case do
-      # NOTE: we may want to group media and stream together, right now we are ignoring variants
-      %{stream: streams} = fields ->
-        version =
-          case Map.fetch(fields, :version) do
-            {:ok, [version]} -> version
-            :error -> nil
-          end
+    items =
+      tags
+      |> Enum.filter(fn {tag, _item} -> tag in [:stream, :content_steering] end)
+      |> Enum.map(fn {_tag, item} -> item end)
 
-        {:ok,
-         %ExM3U8.MultivariantPlaylist{
-           version: version,
-           independent_segments: Map.has_key?(fields, :independent_segments),
-           items: streams
-         }}
+    {:version, version} =
+      Enum.find(tags, {:version, nil}, fn {tag, _version} -> tag == :version end)
 
-      _fields ->
-        {:error, "not a single stream tag present"}
-    end
+    {:independent_segments, independent_segments} =
+      Enum.find(
+        tags,
+        {:independent_segments, false},
+        fn {tag, _independent_segments} -> tag == :independent_segments end
+      )
+
+    {:ok,
+     %ExM3U8.MultivariantPlaylist{
+       version: version,
+       independent_segments: independent_segments,
+       items: items
+     }}
   end
 
   @spec parse_media_playlist(String.t(), keyword()) ::
@@ -314,6 +314,16 @@ defmodule ExM3U8.Deserializer.Parser do
          [uri | lines] <- lines,
          {:ok, variant} <- ExM3U8.Tags.Stream.deserialize(attrs) do
       {:ok, :stream, %ExM3U8.Tags.Stream{variant | uri: uri}, lines}
+    else
+      _other ->
+        {:error, "invalid media tag"}
+    end
+  end
+
+  parse_tag "CONTENT-STEERING" do
+    with {:ok, attrs} <- AttributesList.parse(value),
+         {:ok, steering} <- ExM3U8.Tags.ContentSteering.deserialize(attrs) do
+      {:ok, :content_steering, steering}
     else
       _other ->
         {:error, "invalid media tag"}

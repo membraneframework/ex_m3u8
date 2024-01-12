@@ -3,13 +3,14 @@ defmodule ExM3U8.MultivariantPlaylistTest do
 
   import ExM3U8.TestUtils
 
-  alias ExM3U8.Tags.Stream
+  alias ExM3U8.Tags.{ContentSteering, Stream}
 
   test "deserialize multivariant manifest" do
     manfiest = """
     #EXTM3U
     #EXT-X-VERSION:7
     #EXT-X-INDEPENDENT-SEGMENTS
+    #EXT-X-CONTENT-STEERING:SERVER-URI="http://example.com/content-steering",PATHWAY-ID="CDN-A"
     #EXT-X-STREAM-INF:BANDWIDTH=150000,RESOLUTION=416x234,CODECS="avc1.42e00a,mp4a.40.2"
     http://example.com/low/index.m3u8
     #EXT-X-STREAM-INF:BANDWIDTH=240000,RESOLUTION=416x234,CODECS="avc1.42e00a,mp4a.40.2"
@@ -27,6 +28,10 @@ defmodule ExM3U8.MultivariantPlaylistTest do
               version: 7,
               independent_segments: true,
               items: [
+                %ContentSteering{
+                  server_uri: "http://example.com/content-steering",
+                  pathway_id: "CDN-A"
+                },
                 %Stream{
                   bandwidth: 150_000,
                   resolution: {416, 234},
@@ -65,6 +70,10 @@ defmodule ExM3U8.MultivariantPlaylistTest do
       version: 7,
       independent_segments: true,
       items: [
+        %ContentSteering{
+          server_uri: "http://example.com/content-steering",
+          pathway_id: "CDN-A"
+        },
         %Stream{
           subtitles: "DEFAULT",
           bandwidth: 150_000,
@@ -106,6 +115,7 @@ defmodule ExM3U8.MultivariantPlaylistTest do
            #EXTM3U
            #EXT-X-VERSION:7
            #EXT-X-INDEPENDENT-SEGMENTS
+           #EXT-X-CONTENT-STEERING:SERVER-URI="http://example.com/content-steering",PATHWAY-ID="CDN-A"
            #EXT-X-STREAM-INF:BANDWIDTH=150000,CODECS="avc1.42e00a,mp4a.40.2",RESOLUTION=416x234,SUBTITLES="DEFAULT"
            http://example.com/low/index.m3u8
            #EXT-X-STREAM-INF:BANDWIDTH=240000,CODECS="avc1.42e00a,mp4a.40.2",RESOLUTION=416x234,VIDEO="DEFAULT"

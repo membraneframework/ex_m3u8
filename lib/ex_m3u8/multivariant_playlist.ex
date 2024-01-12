@@ -12,7 +12,7 @@ defmodule ExM3U8.MultivariantPlaylist do
     field :version, non_neg_integer(), default: nil
     field :independent_segments, boolean(), default: false
 
-    field :items, [Tags.Media.t() | Tags.Stream.t() | custom_tag_t()]
+    field :items, [Tags.ContentSteering.t() | Tags.Media.t() | Tags.Stream.t() | custom_tag_t()]
   end
 
   defimpl ExM3U8.Serializer do
