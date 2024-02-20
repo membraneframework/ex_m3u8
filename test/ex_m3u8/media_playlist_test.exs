@@ -221,6 +221,30 @@ defmodule ExM3U8.MediaPlaylistTest do
     assert {:ok, ^playlist} = ExM3U8.Deserializer.Parser.parse_media_playlist(manifest)
   end
 
+  test "deserialize segments with nested tags" do
+    manifest = """
+    #EXTM3U
+    #EXT-X-VERSION:7
+    #EXT-X-TARGETDURATION:6
+    #EXT-X-PART-INF:PART-TARGET=1.0
+    #EXTINF:3.0,
+    #EXT-X-BYTERANGE:426056@349786
+    #EXT-X-DISCONTINUITY
+    #EXT-X-PROGRAM-DATE-TIME:2077-12-12T12:00:00Z
+    segment1.m4s
+    """
+
+    timeline = [
+      %ExM3U8.Tags.ByteRange{offset: 349_786, length: 426_056},
+      %ExM3U8.Tags.Discontinuity{},
+      %ExM3U8.Tags.ProgramDateTime{date: ~U[2077-12-12 12:00:00Z]},
+      %ExM3U8.Tags.Segment{uri: "segment1.m4s", duration: 3.0}
+    ]
+
+    assert {:ok, playlist} = ExM3U8.Deserializer.Parser.parse_media_playlist(manifest)
+    assert playlist.timeline == timeline
+  end
+
   defmodule CustomTag do
     @moduledoc false
 
