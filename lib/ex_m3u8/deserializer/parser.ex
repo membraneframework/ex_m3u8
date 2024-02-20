@@ -80,6 +80,7 @@ defmodule ExM3U8.Deserializer.Parser do
   ]
   @timeline_tags [
     :program_date_time,
+    :byterange,
     :media_init,
     :part,
     :segment,
@@ -156,16 +157,10 @@ defmodule ExM3U8.Deserializer.Parser do
     end
   end
 
-  parse_raw "#EXTINF:" do
+  defp do_parse(["#EXTINF:" <> value | lines], acc, opts) do
     case Float.parse(value) do
       {duration, ","} ->
-        case lines do
-          [uri | lines] ->
-            {:ok, :segment, %ExM3U8.Tags.Segment{duration: duration, uri: uri}, lines}
-
-          [] ->
-            {:error, "segment uri missing"}
-        end
+        parse_segment(duration, lines, acc, opts)
 
       :error ->
         {:error, "invalid segment duration"}
@@ -179,6 +174,28 @@ defmodule ExM3U8.Deserializer.Parser do
 
       _other ->
         {:error, "invalid program date time"}
+    end
+  end
+
+  parse_tag "BYTERANGE" do
+    case String.split(value, "@") do
+      [length] ->
+        case Integer.parse(length) do
+          {length, ""} -> {:ok, :byterange, %ExM3U8.Tags.ByteRange{length: length}}
+          :error -> {:error, "invalid byterange"}
+        end
+
+      [length, offset] ->
+        with {length, ""} <- Integer.parse(length),
+             {offset, ""} <- Integer.parse(offset) do
+          {:ok, :byterange, %ExM3U8.Tags.ByteRange{length: length, offset: offset}}
+        else
+          _other ->
+            {:error, "invalid byterange"}
+        end
+
+      _other ->
+        {:error, "invalid byterange"}
     end
   end
 
@@ -378,6 +395,30 @@ defmodule ExM3U8.Deserializer.Parser do
     |> case do
       {:error, _reason} = error -> error
       {lines, acc} -> do_parse(lines, acc, opts)
+    end
+  end
+
+  defp parse_segment(duration, lines, acc, opts) do
+    {segment_tags, lines} = Enum.split_while(lines, &String.starts_with?(&1, "#"))
+
+    case do_parse(segment_tags, [], opts) do
+      {:error, _reason} = error ->
+        error
+
+      segment_tags ->
+        acc = Enum.reduce(segment_tags, acc, &[&1 | &2])
+
+        case lines do
+          [uri | lines] ->
+            do_parse(
+              lines,
+              [{:segment, %ExM3U8.Tags.Segment{duration: duration, uri: uri}} | acc],
+              opts
+            )
+
+          [] ->
+            {:error, "missing segment uri"}
+        end
     end
   end
 end
