@@ -79,6 +79,7 @@ defmodule ExM3U8.Deserializer.Parser do
     :end_list
   ]
   @timeline_tags [
+    :skip,
     :program_date_time,
     :byterange,
     :media_init,
@@ -299,6 +300,18 @@ defmodule ExM3U8.Deserializer.Parser do
 
       {time, _rest} when is_float(time) ->
         {:error, "invalid start tag time offset"}
+    end
+  end
+
+  parse_tag "SKIP" do
+    case AttributesList.parse(value) do
+      {:ok, attributes} ->
+        with {:ok, skip} <- ExM3U8.Tags.Skip.deserialize(attributes) do
+          {:ok, :skip, skip}
+        end
+
+      :error ->
+        {:error, "invalid media tag"}
     end
   end
 

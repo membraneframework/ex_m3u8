@@ -74,7 +74,7 @@ defmodule ExM3U8.MediaPlaylistTest do
 
     playlist = %ExM3U8.MediaPlaylist{
       info: info,
-      timeline: timeline
+      timeline: [%ExM3U8.Tags.Skip{skipped_segments: 0} | timeline]
     }
 
     assert """
@@ -86,6 +86,7 @@ defmodule ExM3U8.MediaPlaylistTest do
            #EXT-X-MEDIA-SEQUENCE:10
            #EXT-X-DISCONTINUITY-SEQUENCE:3
            #EXT-X-START:TIME-OFFSET=10.0,PRECISE=YES
+           #EXT-X-SKIP:SKIPPED-SEGMENTS=0
            #EXT-X-DISCONTINUITY
            #EXT-X-MAP:URI="header.mp4"
            #EXT-X-PROGRAM-DATE-TIME:2077-12-12T12:00:00Z
