@@ -79,6 +79,7 @@ defmodule ExM3U8.Deserializer.Parser do
     :end_list
   ]
   @timeline_tags [
+    :skip,
     :program_date_time,
     :byterange,
     :media_init,
@@ -104,32 +105,29 @@ defmodule ExM3U8.Deserializer.Parser do
   end
 
   defp assemble_media_playlist_info(tags) do
-    tags = Map.new(tags)
+    case Keyword.validate(
+           tags,
+           [
+             :target_duration,
+             version: nil,
+             playlist_type: nil,
+             server_control: nil,
+             part_inf: nil,
+             media_sequence: 0,
+             discontinuity_sequence: 0,
+             start: nil,
+             end_list: false
+           ]
+         ) do
+      {:ok, tags} ->
+        tags =
+          tags
+          |> Keyword.delete(:end_list)
+          |> Keyword.put(:end_list?, tags[:end_list])
 
-    with version <- Map.get(tags, :version),
-         playlist_type <- Map.get(tags, :playlist_type),
-         {:ok, target_duration} <- Map.fetch(tags, :target_duration),
-         server_control <- Map.get(tags, :server_control),
-         part_inf <- Map.get(tags, :part_inf),
-         media_sequence <- Map.get(tags, :media_sequence, 0),
-         discontinuity_sequence <- Map.get(tags, :discontinuity_sequence, 0),
-         start <- Map.get(tags, :start, nil),
-         end_list <-
-           Map.get(tags, :end_list, false) do
-      {:ok,
-       %ExM3U8.MediaPlaylist.Info{
-         version: version,
-         playlist_type: playlist_type,
-         target_duration: target_duration,
-         server_control: server_control,
-         part_inf: part_inf,
-         media_sequence: media_sequence,
-         discontinuity_sequence: discontinuity_sequence,
-         start: start,
-         end_list?: end_list
-       }}
-    else
-      :error ->
+        {:ok, struct!(ExM3U8.MediaPlaylist.Info, tags)}
+
+      {:error, _fields} ->
         {:error, "missing required media playlist info field"}
     end
   end
@@ -302,6 +300,18 @@ defmodule ExM3U8.Deserializer.Parser do
     end
   end
 
+  parse_tag "SKIP" do
+    case AttributesList.parse(value) do
+      {:ok, attributes} ->
+        with {:ok, skip} <- ExM3U8.Tags.Skip.deserialize(attributes) do
+          {:ok, :skip, skip}
+        end
+
+      :error ->
+        {:error, "invalid skip tag"}
+    end
+  end
+
   parse_tag "MEDIA" do
     case AttributesList.parse(value) do
       {:ok, attributes} ->
@@ -322,7 +332,7 @@ defmodule ExM3U8.Deserializer.Parser do
         end
 
       :error ->
-        {:error, "invalid media tag"}
+        {:error, "invalid key tag"}
     end
   end
 
@@ -333,7 +343,7 @@ defmodule ExM3U8.Deserializer.Parser do
       {:ok, :stream, %ExM3U8.Tags.Stream{variant | uri: uri}, lines}
     else
       _other ->
-        {:error, "invalid media tag"}
+        {:error, "invalid stream inf tag"}
     end
   end
 
@@ -343,7 +353,7 @@ defmodule ExM3U8.Deserializer.Parser do
       {:ok, :content_steering, steering}
     else
       _other ->
-        {:error, "invalid media tag"}
+        {:error, "invalid content steering tag"}
     end
   end
 
