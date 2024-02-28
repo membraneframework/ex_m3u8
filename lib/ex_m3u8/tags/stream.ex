@@ -24,6 +24,7 @@ defmodule ExM3U8.Tags.Stream do
     field :subtitles, String.t() | nil, default: nil
     field :uri, String.t() | nil, default: nil
     field :pathway_id, String.t() | nil, default: nil
+    field :video_layout, String.t() | nil, default: nil
   end
 
   @impl true
@@ -72,6 +73,10 @@ defmodule ExM3U8.Tags.Stream do
 
   load_attribute :pathway_id,
     attribute: "PATHWAY-ID",
+    allow_empty?: true
+
+  load_attribute :video_layout,
+    attribute: "REQ-VIDEO-LAYOUT",
     allow_empty?: true
 
   # NOTE: uri is a part of tag's new line, we don't load it from attributes
@@ -124,6 +129,7 @@ defmodule ExM3U8.Tags.Stream do
         :video,
         :subtitles,
         :pathway_id,
+        :video_layout,
         :uri
       ])
     end
@@ -162,9 +168,13 @@ defmodule ExM3U8.Tags.Stream do
       attribute: "PATHWAY-ID",
       quoted_string?: true
 
+    dump_attribute :video_layout,
+      attribute: "REQ-VIDEO-LAYOUT",
+      quoted_string?: true
+
     ignore_dump(:uri)
 
-    # resolution by hand as the value is not that easy 
+    # resolution by hand as the value is not that easy
     # to process
     defp dump({:resolution, nil}), do: []
 

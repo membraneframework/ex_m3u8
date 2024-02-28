@@ -1,6 +1,6 @@
 defmodule ExM3U8.Tags.Media do
   @moduledoc """
-  Structure representing a media tag. 
+  Structure representing a media tag.
   """
   @behaviour ExM3U8.Deserializer.AttributesDeserializer
 
@@ -17,6 +17,7 @@ defmodule ExM3U8.Tags.Media do
     field :name, String.t()
     field :default?, boolean(), default: false
     field :auto_select?, boolean(), default: false
+    field :channels, String.t() | nil, default: nil
   end
 
   @impl true
@@ -54,6 +55,10 @@ defmodule ExM3U8.Tags.Media do
     default: false,
     allow_empty?: true,
     type: :boolean
+
+  load_attribute :channels,
+    attribute: "CHANNELS",
+    allow_empty?: true
 
   defp load(:type, attrs) do
     case Map.get(attrs, "TYPE", nil) do
@@ -95,7 +100,8 @@ defmodule ExM3U8.Tags.Media do
         :language,
         :name,
         :default?,
-        :auto_select?
+        :auto_select?,
+        :channels
       ])
     end
 
@@ -140,5 +146,10 @@ defmodule ExM3U8.Tags.Media do
     dump_attribute :auto_select?,
       attribute: "AUTOSELECT",
       empty_arg: false
+
+    dump_attribute :channels,
+      attribute: "CHANNELS",
+      quoted_string?: true,
+      skip_empty?: true
   end
 end
