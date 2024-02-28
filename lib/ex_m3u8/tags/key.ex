@@ -1,13 +1,11 @@
 defmodule ExM3U8.Tags.Key do
   @moduledoc """
-  Structure representing a key tag. 
+  Structure representing a key tag.
   """
   @behaviour ExM3U8.Deserializer.AttributesDeserializer
 
   use TypedStruct
   use ExM3U8.DSL, disable_loaders: [:int, :float, :boolean]
-
-  use TypedStruct
 
   alias ExM3U8.Deserializer.AttributesDeserializer
 

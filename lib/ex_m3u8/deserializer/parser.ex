@@ -158,7 +158,21 @@ defmodule ExM3U8.Deserializer.Parser do
   defp do_parse(["#EXTINF:" <> value | lines], acc, opts) do
     case Float.parse(value) do
       {duration, ","} ->
-        parse_segment(duration, lines, acc, opts)
+        parse_segment(%ExM3U8.Tags.Segment{}, duration, lines, acc, opts)
+
+      {duration, "," <> attributes} ->
+        with {:ok, attrs} <- AttributesList.parse(attributes) do
+          parse_segment(
+            %ExM3U8.Tags.Segment{video_layout: attrs["REQ-VIDEO-LAYOUT"]},
+            duration,
+            lines,
+            acc,
+            opts
+          )
+        else
+          :error ->
+            {:error, "invalid segment attributes"}
+        end
 
       :error ->
         {:error, "invalid segment duration"}
@@ -408,7 +422,7 @@ defmodule ExM3U8.Deserializer.Parser do
     end
   end
 
-  defp parse_segment(duration, lines, acc, opts) do
+  defp parse_segment(segment, duration, lines, acc, opts) do
     {segment_tags, lines} = Enum.split_while(lines, &String.starts_with?(&1, "#"))
 
     case do_parse(segment_tags, [], opts) do
@@ -422,7 +436,7 @@ defmodule ExM3U8.Deserializer.Parser do
           [uri | lines] ->
             do_parse(
               lines,
-              [{:segment, %ExM3U8.Tags.Segment{duration: duration, uri: uri}} | acc],
+              [{:segment, %ExM3U8.Tags.Segment{segment | duration: duration, uri: uri}} | acc],
               opts
             )
 

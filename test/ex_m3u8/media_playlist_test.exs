@@ -246,6 +246,23 @@ defmodule ExM3U8.MediaPlaylistTest do
     assert playlist.timeline == timeline
   end
 
+  test "deserialize segments with video layout attribute" do
+    manifest = """
+    #EXTM3U
+    #EXT-X-VERSION:12
+    #EXT-X-TARGETDURATION:6
+    #EXT-X-PART-INF:PART-TARGET=1.0
+    #EXTINF:3.0,REQ-VIDEO-LAYOUT="CH-STEREO"
+    segment1.m4s
+    """
+
+    assert {:ok, playlist} = ExM3U8.Deserializer.Parser.parse_media_playlist(manifest)
+
+    assert playlist.timeline == [
+             %ExM3U8.Tags.Segment{uri: "segment1.m4s", duration: 3.0, video_layout: "CH-STEREO"}
+           ]
+  end
+
   defmodule CustomTag do
     @moduledoc false
 
