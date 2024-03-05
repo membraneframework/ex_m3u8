@@ -34,7 +34,7 @@ defmodule ExM3U8.Deserializer.Parser do
   defp assemble_multi_variant_playlist(tags) do
     items =
       tags
-      |> Enum.filter(fn {tag, _item} -> tag in [:stream, :content_steering] end)
+      |> Enum.filter(fn {tag, _item} -> tag in [:stream, :content_steering, :media] end)
       |> Enum.map(fn {_tag, item} -> item end)
 
     {:version, version} =
