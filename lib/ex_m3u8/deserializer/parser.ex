@@ -128,7 +128,7 @@ defmodule ExM3U8.Deserializer.Parser do
         {:ok, struct!(ExM3U8.MediaPlaylist.Info, tags)}
 
       {:error, fields} ->
-        description = Enum.map_join(fields, &to_string/1, ", ")
+        description = Enum.map_join(fields, ", ", &to_string/1)
         {:error, "missing required media playlist info field: #{description}"}
     end
   end
