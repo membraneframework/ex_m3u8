@@ -111,6 +111,7 @@ defmodule ExM3U8.Deserializer.Parser do
              :target_duration,
              version: nil,
              playlist_type: nil,
+             independent_segments: false,
              server_control: nil,
              part_inf: nil,
              media_sequence: 0,
