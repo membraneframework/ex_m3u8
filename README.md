@@ -12,7 +12,7 @@ The package can be installed by adding `ex_m3u8` into your list of dependencies 
 ```elixir
 def deps do
   [
-    {:ex_m3u8, "~> 0.12.0"}
+    {:ex_m3u8, "~> 0.13.0"}
   ]
 end
 ```

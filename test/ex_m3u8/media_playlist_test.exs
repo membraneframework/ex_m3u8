@@ -127,7 +127,7 @@ defmodule ExM3U8.MediaPlaylistTest do
            |> String.trim_trailing() == serialize(server_control)
   end
 
-  test "deserialize serer control" do
+  test "deserialize server control" do
     server_control = %ExM3U8.MediaPlaylist.ServerControl{
       can_block_reload?: true,
       part_hold_back: 3.0,
@@ -171,6 +171,7 @@ defmodule ExM3U8.MediaPlaylistTest do
     segment2.m4s
     #EXT-X-PRELOAD-HINT:TYPE=PART,URI="segment3.1.m4s"
     #EXT-X-RENDITION-REPORT:URI="rendition_uri.m3u8",LAST-MSN=5,LAST-PART=3
+    #EXT-X-ENDLIST
     """
 
     info = %ExM3U8.MediaPlaylist.Info{
@@ -185,7 +186,8 @@ defmodule ExM3U8.MediaPlaylistTest do
       start: {10.0, true},
       part_inf: 1.0,
       media_sequence: 10,
-      discontinuity_sequence: 3
+      discontinuity_sequence: 3,
+      end_list?: true
     }
 
     date = ~U[2077-12-12 12:00:00Z]
@@ -219,7 +221,7 @@ defmodule ExM3U8.MediaPlaylistTest do
       timeline: timeline
     }
 
-    assert {:ok, ^playlist} = ExM3U8.Deserializer.Parser.parse_media_playlist(manifest)
+    assert {:ok, playlist} == ExM3U8.Deserializer.Parser.parse_media_playlist(manifest)
   end
 
   test "deserialize segments with nested tags" do
