@@ -35,4 +35,28 @@ defmodule ExM3U8.Helpers do
 
   @spec quoted_string(String.t()) :: String.t()
   def quoted_string(value), do: ~s("#{value}")
+
+  @spec parse_byte_range(String.t()) ::
+          {:ok, {size :: non_neg_integer(), offset :: non_neg_integer() | nil}}
+          | {:error, String.t()}
+  def parse_byte_range(value) do
+    error = {:error, "invalid byte range"}
+
+    case String.split(value, "@", parts: 2) do
+      [size, offset] ->
+        case {Integer.parse(size), Integer.parse(offset)} do
+          {{size, ""}, {offset, ""}} -> {:ok, {size, offset}}
+          _other -> error
+        end
+
+      [size] ->
+        case Integer.parse(size) do
+          {size, ""} -> {:ok, {size, nil}}
+          :error -> error
+        end
+
+      _other ->
+        error
+    end
+  end
 end
