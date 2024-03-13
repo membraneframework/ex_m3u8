@@ -45,28 +45,7 @@ defmodule ExM3U8.Tags.Part do
   defp load(:byte_range, attrs) do
     case Map.get(attrs, "BYTERANGE", nil) do
       nil -> {:ok, nil}
-      byte_range -> parse_byte_range(byte_range)
-    end
-  end
-
-  defp parse_byte_range(byte_range) do
-    error = {:error, "invalid byte range"}
-
-    case String.split(byte_range, "@", parts: 2) do
-      [size, offset] ->
-        case {Integer.parse(size), Integer.parse(offset)} do
-          {{size, ""}, {offset, ""}} -> {:ok, {size, offset}}
-          _other -> error
-        end
-
-      [size] ->
-        case Integer.parse(size) do
-          {size, ""} -> {:ok, {size, nil}}
-          :error -> error
-        end
-
-      _other ->
-        error
+      byte_range -> ExM3U8.Helpers.parse_byte_range(byte_range)
     end
   end
 
