@@ -6,6 +6,7 @@ defmodule ExM3U8.MediaPlaylist.Info do
 
   typedstruct enforce: true do
     field :version, pos_integer() | nil
+    field :independent_segments, boolean(), default: false
     field :playlist_type, :vod | :event | nil, default: nil
     field :target_duration, pos_integer()
     field :server_control, ExM3U8.MediaPlaylist.ServerControl.t() | nil, default: nil
@@ -33,6 +34,7 @@ defmodule ExM3U8.MediaPlaylist.Info do
       Helpers.generate_sorter(tag, [
         :version,
         :playlist_type,
+        :independent_segments,
         :target_duration,
         :server_control,
         :part_inf,
@@ -61,6 +63,10 @@ defmodule ExM3U8.MediaPlaylist.Info do
     dump_tag :target_duration,
       tag: "TARGETDURATION",
       skip_empty?: false
+
+    defp dump({:independent_segments, true}), do: [Helpers.tag_prefix(), "INDEPENDENT-SEGMENTS"]
+
+    defp dump({:independent_segments, false}), do: []
 
     defp dump({:server_control, nil}), do: []
 

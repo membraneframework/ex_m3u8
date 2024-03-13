@@ -7,6 +7,7 @@ defmodule ExM3U8.MediaPlaylistTest do
     info = %ExM3U8.MediaPlaylist.Info{
       playlist_type: :vod,
       target_duration: 6,
+      independent_segments: true,
       version: 7,
       server_control: %ExM3U8.MediaPlaylist.ServerControl{
         can_block_reload?: true,
@@ -22,6 +23,7 @@ defmodule ExM3U8.MediaPlaylistTest do
     assert """
            #EXT-X-VERSION:7
            #EXT-X-PLAYLIST-TYPE:VOD
+           #EXT-X-INDEPENDENT-SEGMENTS
            #EXT-X-TARGETDURATION:6
            #EXT-X-SERVER-CONTROL:CAN-BLOCK-RELOAD=YES,PART-HOLD-BACK=3.0,HOLD-BACK=6.0,CAN-SKIP-UNTIL=12.0
            #EXT-X-PART-INF:PART-TARGET=1.0
@@ -148,6 +150,7 @@ defmodule ExM3U8.MediaPlaylistTest do
     manifest = """
     #EXTM3U
     #EXT-X-VERSION:7
+    #EXT-X-INDEPENDENT-SEGMENTS
     #EXT-X-TARGETDURATION:6
     #EXT-X-SERVER-CONTROL:CAN-BLOCK-RELOAD=YES,PART-HOLD-BACK=3.0,HOLD-BACK=6.0,CAN-SKIP-UNTIL=12.0
     #EXT-X-PART-INF:PART-TARGET=1.0
@@ -177,6 +180,7 @@ defmodule ExM3U8.MediaPlaylistTest do
     info = %ExM3U8.MediaPlaylist.Info{
       target_duration: 6,
       version: 7,
+      independent_segments: true,
       server_control: %ExM3U8.MediaPlaylist.ServerControl{
         can_block_reload?: true,
         part_hold_back: 3.0,
