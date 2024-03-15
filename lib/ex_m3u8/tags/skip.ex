@@ -22,7 +22,7 @@ defmodule ExM3U8.Tags.Skip do
     )
   end
 
-  load_attribute :skiped_segments,
+  load_attribute :skipped_segments,
     attribute: "SKIPPED-SEGMENTS",
     type: :int,
     allow_empty?: false
