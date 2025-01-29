@@ -165,10 +165,8 @@ defmodule ExM3U8.MediaPlaylistTest do
 
     assert {:ok, playlist} = ExM3U8.Deserializer.Parser.parse_media_playlist(manifest)
 
-    # this one succeeds
     assert Enum.at(playlist.timeline, 1).duration == 6.016
 
-    # these fail
     assert String.contains?(serialize(playlist), "6.016")
     refute String.contains?(serialize(playlist), "6.017")
   end
