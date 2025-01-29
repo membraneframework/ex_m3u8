@@ -146,6 +146,33 @@ defmodule ExM3U8.MediaPlaylistTest do
              ExM3U8.MediaPlaylist.ServerControl.deserialize(attrs)
   end
 
+  test "deserialize playlist with non-round EXTINF values and reserialize without losing precision" do
+    manifest = """
+    #EXTM3U
+    #EXT-X-VERSION:6
+    #EXT-X-TARGETDURATION:7
+    #EXT-X-PLAYLIST-TYPE:VOD
+    #EXT-X-MAP:URI="audio_init.mp4"
+    #EXTINF:6.016,
+    segments/audio_000000.m4s
+    #EXTINF:6.016,
+    segments/audio_000001.m4s
+    #EXTINF:6.016,
+    segments/audio_000002.m4s
+    #EXTINF:5.952,
+    segments/audio_000003.m4s
+    """
+
+    assert {:ok, playlist} = ExM3U8.Deserializer.Parser.parse_media_playlist(manifest)
+
+    # this one succeeds
+    assert Enum.at(playlist.timeline, 1).duration == 6.016
+
+    # these fail
+    assert String.contains?(serialize(playlist), "6.016")
+    refute String.contains?(serialize(playlist), "6.017")
+  end
+
   test "deserialize media playlist" do
     manifest = """
     #EXTM3U
