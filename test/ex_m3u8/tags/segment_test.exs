@@ -25,6 +25,7 @@ defmodule ExM3U8.Tags.SegmentTest do
     serialized = serialize(segment)
 
     refute String.contains?(serialized, "6.017")
+
     assert """
            #EXTINF:6.016,
            segment.m4s
