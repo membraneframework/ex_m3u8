@@ -18,7 +18,7 @@ defmodule ExM3U8.Deserializer.Parser do
 
   @extm3u "#EXTM3U"
 
-  defp is_tag({tag, _value}, tags), do: tag in tags
+  defp tag?({tag, _value}, tags), do: tag in tags
 
   @spec parse_multivariant_playlist(String.t(), keyword()) ::
           {:ok, ExM3U8.MultivariantPlaylist.t()} | {:error, term()}
@@ -92,12 +92,12 @@ defmodule ExM3U8.Deserializer.Parser do
     :custom_tag
   ]
   defp assemble_media_playlist(tags) do
-    {info_tags, other_tags} = Enum.split_with(tags, &is_tag(&1, @info_tags))
+    {info_tags, other_tags} = Enum.split_with(tags, &tag?(&1, @info_tags))
 
     with {:ok, info} <- assemble_media_playlist_info(info_tags) do
       timeline =
         other_tags
-        |> Enum.filter(&is_tag(&1, @timeline_tags))
+        |> Enum.filter(&tag?(&1, @timeline_tags))
         |> Enum.map(&elem(&1, 1))
 
       {:ok, %ExM3U8.MediaPlaylist{info: info, timeline: timeline}}
