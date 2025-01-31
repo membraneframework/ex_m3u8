@@ -15,4 +15,21 @@ defmodule ExM3U8.Tags.SegmentTest do
            """
            |> String.trim_trailing() == serialize(segment)
   end
+
+  test "serialize a segment with a problematic duration value" do
+    segment = %ExM3U8.Tags.Segment{
+      duration: 6.016,
+      uri: "segment.m4s"
+    }
+
+    serialized = serialize(segment)
+
+    refute String.contains?(serialized, "6.017")
+
+    assert """
+           #EXTINF:6.016,
+           segment.m4s
+           """
+           |> String.trim_trailing() == serialized
+  end
 end

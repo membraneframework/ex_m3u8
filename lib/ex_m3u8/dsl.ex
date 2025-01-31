@@ -13,7 +13,7 @@ defmodule ExM3U8.DSL do
         import unquote(__MODULE__)
 
         defp __dump_value(value) when is_binary(value), do: value
-        defp __dump_value(value) when is_float(value), do: "#{Float.ceil(value, 3)}"
+        defp __dump_value(value) when is_float(value), do: "#{Float.round(value, 3)}"
         defp __dump_value(value) when is_integer(value), do: "#{value}"
         defp __dump_value(true), do: "YES"
         defp __dump_value(false), do: "NO"

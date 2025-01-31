@@ -6,7 +6,7 @@ defmodule ExM3U8.Deserializer.AttributesDeserializer do
   @spec deserialize_struct_fields(module(), function(), map()) ::
           {:ok, struct()} | {:error, term()}
   def deserialize_struct_fields(module, load_fun, attrs) do
-    module.__struct__
+    module.__struct__()
     |> Map.delete(:__struct__)
     |> Map.keys()
     |> Enum.reduce_while([], fn field, loaded ->

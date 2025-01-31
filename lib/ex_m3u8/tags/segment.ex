@@ -14,7 +14,7 @@ defmodule ExM3U8.Tags.Segment do
     def serialize(%@for{duration: duration, uri: uri}) do
       duration =
         if is_float(duration) do
-          Float.ceil(duration, 3)
+          Float.round(duration, 3)
         else
           duration
         end
