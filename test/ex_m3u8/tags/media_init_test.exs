@@ -55,6 +55,6 @@ defmodule ExM3U8.Tags.MediaInitTest do
 
     assert {:ok, ^header} = ExM3U8.Tags.MediaInit.deserialize(attrs)
 
-    assert {:error, "missing value"} = ExM3U8.Tags.MediaInit.deserialize(%{})
+    assert {:error, "missing value" <> _rest} = ExM3U8.Tags.MediaInit.deserialize(%{})
   end
 end
