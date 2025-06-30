@@ -104,7 +104,9 @@ defmodule ExM3U8.DSL do
       if allow_empty? do
         quote do: {:ok, unquote(default)}
       else
-        quote do: {:error, "missing value"}
+        quote do:
+                {:error,
+                 "missing value (field: #{inspect(unquote(field))} opts: #{unquote(opts) |> inspect()})"}
       end
 
     quote do

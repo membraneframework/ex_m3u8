@@ -47,7 +47,8 @@ defmodule ExM3U8.Tags.Media do
 
   load_attribute :default?,
     attribute: "DEFAULT",
-    allow_empty?: false,
+    allow_empty?: true,
+    default: false,
     type: :boolean
 
   load_attribute :auto_select?,
