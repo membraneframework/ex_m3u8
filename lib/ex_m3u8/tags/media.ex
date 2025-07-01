@@ -31,7 +31,7 @@ defmodule ExM3U8.Tags.Media do
 
   load_attribute :uri,
     attribute: "URI",
-    allow_empty?: false
+    allow_empty?: true
 
   load_attribute :group_id,
     attribute: "GROUP-ID",
