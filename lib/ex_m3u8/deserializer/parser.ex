@@ -294,9 +294,6 @@ defmodule ExM3U8.Deserializer.Parser do
       :error ->
         {:error, "invalid start tag"}
 
-      {:error, _reason} ->
-        {:error, "invalid start tag"}
-
       {time, _rest} when is_float(time) ->
         {:error, "invalid start tag time offset"}
     end
