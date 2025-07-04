@@ -106,7 +106,7 @@ defmodule ExM3U8.DSL do
       else
         quote do:
                 {:error,
-                 "missing value (field: #{inspect(unquote(field))} opts: #{unquote(opts) |> inspect()})"}
+                 "missing value (field: #{unquote(field) |> inspect()} opts: #{unquote(opts) |> inspect()})"}
       end
 
     quote do
