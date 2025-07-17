@@ -57,6 +57,7 @@ defmodule ExM3U8.Deserializer.Parser do
 
   @spec parse_media_playlist(String.t(), keyword()) ::
           {:ok, ExM3U8.MediaPlaylist.t()} | {:error, term()}
+  @spec parse_media_playlist(binary()) :: {:error, any()} | {:ok, ExM3U8.MediaPlaylist.t()}
   def parse_media_playlist(payload, opts \\ []) do
     payload
     |> String.split("\n")
@@ -105,32 +106,46 @@ defmodule ExM3U8.Deserializer.Parser do
   end
 
   defp assemble_media_playlist_info(tags) do
-    case Keyword.validate(
-           tags,
-           [
-             :target_duration,
-             version: nil,
-             playlist_type: nil,
-             independent_segments: false,
-             server_control: nil,
-             part_inf: nil,
-             media_sequence: 0,
-             discontinuity_sequence: 0,
-             start: nil,
-             end_list: false
-           ]
-         ) do
+    case validate_tags(tags) do
       {:ok, tags} ->
         tags =
           tags
-          |> Keyword.delete(:end_list)
           |> Keyword.put(:end_list?, tags[:end_list])
+          |> Keyword.delete(:end_list)
 
         {:ok, struct!(ExM3U8.MediaPlaylist.Info, tags)}
 
+      {:error, _description} = error ->
+        error
+    end
+  end
+
+  defp validate_tags(tags) do
+    with {:ok, tags} <-
+           Keyword.validate(
+             tags,
+             [
+               :target_duration,
+               version: nil,
+               playlist_type: nil,
+               independent_segments: false,
+               server_control: nil,
+               part_inf: nil,
+               media_sequence: 0,
+               discontinuity_sequence: 0,
+               start: nil,
+               end_list: false
+             ]
+           ),
+         true <- Keyword.has_key?(tags, :target_duration) do
+      {:ok, tags}
+    else
+      false ->
+        {:error, "missing required media playlist info field: target_duration"}
+
       {:error, fields} ->
         description = Enum.map_join(fields, ", ", &to_string/1)
-        {:error, "missing required media playlist info field: #{description}"}
+        {:error, "illegal media playlist info field: #{description}"}
     end
   end
 
