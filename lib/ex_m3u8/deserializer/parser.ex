@@ -57,7 +57,6 @@ defmodule ExM3U8.Deserializer.Parser do
 
   @spec parse_media_playlist(String.t(), keyword()) ::
           {:ok, ExM3U8.MediaPlaylist.t()} | {:error, term()}
-  @spec parse_media_playlist(binary()) :: {:error, any()} | {:ok, ExM3U8.MediaPlaylist.t()}
   def parse_media_playlist(payload, opts \\ []) do
     payload
     |> String.split("\n")
