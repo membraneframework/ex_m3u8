@@ -173,7 +173,7 @@ defmodule ExM3U8.Deserializer.Parser do
 
   defp do_parse(["#EXTINF:" <> value | lines], acc, opts) do
     case Float.parse(value) do
-      {duration, ","} ->
+      {duration, "," <> _maybe_title} ->
         parse_segment(duration, lines, acc, opts)
 
       :error ->
