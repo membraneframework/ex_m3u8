@@ -6,6 +6,7 @@ defmodule ExM3U8.Deserializer.Parser do
   require ExM3U8.Deserializer.DSL
 
   alias ExM3U8.Deserializer.AttributesList
+  alias ExM3U8.Tags.Stream
 
   @type custom_tag_parser_result ::
           :skip
@@ -352,8 +353,8 @@ defmodule ExM3U8.Deserializer.Parser do
   parse_raw "#EXT-X-STREAM-INF:" do
     with {:ok, attrs} <- AttributesList.parse(value),
          [uri | lines] <- lines,
-         {:ok, variant} <- ExM3U8.Tags.Stream.deserialize(attrs) do
-      {:ok, :stream, %ExM3U8.Tags.Stream{variant | uri: uri}, lines}
+         {:ok, %Stream{} = variant} <- Stream.deserialize(attrs) do
+      {:ok, :stream, %Stream{variant | uri: uri}, lines}
     else
       _other ->
         {:error, "invalid stream inf tag"}
