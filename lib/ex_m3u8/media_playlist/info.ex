@@ -75,7 +75,7 @@ defmodule ExM3U8.MediaPlaylist.Info do
     defp dump({:part_inf, nil}), do: []
 
     defp dump({:part_inf, part_inf}),
-      do: [Helpers.tag_prefix(), "PART-INF:PART-TARGET=", "#{Float.round(part_inf, 3)}"]
+      do: [Helpers.tag_prefix(), "PART-INF:PART-TARGET=", "#{Float.round(part_inf, 6)}"]
 
     defp dump({:start, nil}),
       do: []
