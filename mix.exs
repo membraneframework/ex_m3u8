@@ -1,7 +1,7 @@
 defmodule ExM3U8.MixProject do
   use Mix.Project
 
-  @version "0.16.0"
+  @version "0.16.1"
   @github_url "https://github.com/membraneframework/ex_m3u8"
 
   def project do
@@ -22,7 +22,8 @@ defmodule ExM3U8.MixProject do
       name: "ExM3U8",
       source_url: @github_url,
       homepage_url: "https://membraneframework.org",
-      docs: docs()
+      docs: docs(),
+      aliases: [docs: ["docs", &prepend_llms_links/1]]
     ]
   end
 
@@ -40,7 +41,7 @@ defmodule ExM3U8.MixProject do
     [
       {:typed_struct, "~> 0.3.0", runtime: false},
       {:nimble_parsec, "~> 1.3", runtime: false},
-      {:ex_doc, "~> 0.27", only: :dev, runtime: false},
+      {:ex_doc, "~> 0.40", only: :dev, runtime: false},
       {:credo, "~> 1.7", only: [:dev, :test], runtime: false},
       {:dialyxir, "~> 1.3", only: [:dev], runtime: false}
     ]
@@ -50,7 +51,6 @@ defmodule ExM3U8.MixProject do
     [
       main: "readme",
       extras: ["README.md", "LICENSE"],
-      formatters: ["html"],
       source_ref: "v#{@version}",
       nest_modules_by_prefix: [
         ExM3U8.Tags,
@@ -73,4 +73,19 @@ defmodule ExM3U8.MixProject do
       }
     ]
   end
+
+defp prepend_llms_links(_) do
+  path = "doc/llms.txt"
+
+  if File.exists?(path) do
+    existing = File.read!(path)
+
+    header =
+      "- [Membrane Core AI Skill](https://hexdocs.pm/membrane_core/skill.md)\n" <>
+        "- [Membrane Core](https://hexdocs.pm/membrane_core/llms.txt)\n\n"
+
+    File.write!(path, header <> existing)
+  end
+end
+
 end
