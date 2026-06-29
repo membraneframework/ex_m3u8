@@ -42,7 +42,7 @@ defmodule ExM3U8.MixProject do
     [
       {:typed_struct, "~> 0.3.0", runtime: false},
       {:nimble_parsec, "~> 1.3", runtime: false},
-      {:ex_doc, "~> 0.40", only: :dev, runtime: false},
+      {:ex_doc, ">= 0.40.0", only: :dev, runtime: false},
       {:credo, ">= 0.0.0", only: [:dev, :test], runtime: false},
       {:dialyxir, ">= 0.0.0", only: [:dev], runtime: false}
     ]
