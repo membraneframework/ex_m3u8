@@ -6,6 +6,9 @@ on:
       - "v*"
   workflow_dispatch:
 
+permissions:
+  contents: write
+
 jobs:
   build_test:
     uses: membraneframework/membrane_actions/.github/workflows/build-test.yml@main
