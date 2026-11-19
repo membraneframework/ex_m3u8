@@ -120,8 +120,6 @@ defmodule ExM3U8.DSL do
   end
 
   defmacro dump_tag(field, opts) do
-    require ExM3U8.Helpers
-
     tag = Keyword.fetch!(opts, :tag)
     skip_empty? = Keyword.get(opts, :skip_empty?, true)
     empty_arg = Keyword.get(opts, :empty_arg, nil)

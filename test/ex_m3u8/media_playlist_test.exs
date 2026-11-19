@@ -228,7 +228,7 @@ defmodule ExM3U8.MediaPlaylistTest do
           %ExM3U8.Tags.Part{duration: 1.0, uri: "segment#{i}.1.m4s"},
           %ExM3U8.Tags.Part{duration: 1.0, uri: "segment#{i}.2.m4s"},
           %ExM3U8.Tags.Part{duration: 1.0, uri: "segment#{i}.2.m4s"},
-          %ExM3U8.Tags.Segment{duration: 3.0, uri: "segment#{i}.m4s"}
+          %ExM3U8.Tags.Segment{duration: 3.0, uri: "segment#{i}.m4s", sequence_number: 9 + i}
         ]
       end
       |> List.flatten()
@@ -270,7 +270,7 @@ defmodule ExM3U8.MediaPlaylistTest do
       %ExM3U8.Tags.ByteRange{offset: 349_786, length: 426_056},
       %ExM3U8.Tags.Discontinuity{},
       %ExM3U8.Tags.ProgramDateTime{date: ~U[2077-12-12 12:00:00Z]},
-      %ExM3U8.Tags.Segment{uri: "segment1.m4s", duration: 3.0}
+      %ExM3U8.Tags.Segment{uri: "segment1.m4s", duration: 3.0, sequence_number: 0}
     ]
 
     assert {:ok, playlist} = ExM3U8.Deserializer.Parser.parse_media_playlist(manifest)
