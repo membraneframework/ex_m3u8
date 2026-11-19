@@ -96,10 +96,19 @@ defmodule ExM3U8.Deserializer.Parser do
     {info_tags, other_tags} = Enum.split_with(tags, &tag?(&1, @info_tags))
 
     with {:ok, info} <- assemble_media_playlist_info(info_tags) do
-      timeline =
+      {timeline, _next_sequence_number} =
         other_tags
         |> Enum.filter(&tag?(&1, @timeline_tags))
-        |> Enum.map(&elem(&1, 1))
+        |> Enum.map_reduce(info.media_sequence, fn
+          {:segment, segment}, sequence_number ->
+            {%{segment | sequence_number: sequence_number}, sequence_number + 1}
+
+          {:skip, skip}, sequence_number ->
+            {skip, sequence_number + skip.skipped_segments}
+
+          {_tag, item}, sequence_number ->
+            {item, sequence_number}
+        end)
 
       {:ok, %ExM3U8.MediaPlaylist{info: info, timeline: timeline}}
     end
